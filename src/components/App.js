@@ -1,6 +1,8 @@
 import React from "react";
+import { parseResponse } from "../util";
 
 import {
+    Alert,
     Button,
     Heading,
     InstUISettingsProvider,
@@ -15,28 +17,20 @@ import AsyncSelect from "./AsyncSelect";
 
 import "../style.css";
 
-let MyContext = React.createContext();
+// This will later be based on LTI info
+const CANVAS_GROUP = "168";
 
-function parseResponse(fetchPromise, jsonCallback) {
-    fetchPromise
-        .then(resp => {
-            if (resp.status !== 200)
-                throw new Error(
-                    `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
-                );
-            return resp.json();
-        })
-        .then(jsonCallback)
-        .catch(e => console.error(e));
-}
+let MyContext = React.createContext();
 
 class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchObjects: {}
+            searchObjects: {},
+            feedbackMessage: null
         };
         this.refresh = this.refresh.bind(this);
+        this.feedback = this.feedback.bind(this);
     }
 
     componentDidMount() {
@@ -44,36 +38,75 @@ class App extends React.Component {
     }
 
     refresh() {
-        // Arrow function callbacks mandatory for binding of `this`
-        let promise = fetch(process.env.TE_CANVAS_URL + "/api/connection");
-        parseResponse(promise, json => {
-            json.data
-                .filter(x => !x.delete_flag)
-                .forEach(x => {
-                    let promise = fetch(
-                        process.env.TE_CANVAS_URL +
-                            `/api/timeedit/object?extid=${x.te_group}`
+        console.log("refresh");
+        // This outer fetch gets a list of connections on the form
+        // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
+        fetch(process.env.TE_CANVAS_URL + "/api/connection")
+            .then(resp => {
+                if (resp.status !== 200)
+                    throw new Error(
+                        `Unexpected HTTP response from backend: ${resp.status}`
                     );
-                    parseResponse(promise, json => {
-                        this.setState(prevState => ({
-                            searchObjects: {
-                                ...prevState.searchObjects,
-                                [json.data.extid]: {
-                                    extid: json.data.extid,
-                                    type: json.data["type.name"],
-                                    id: json.data["general.id"],
-                                    title: json.data["general.title"]
-                                }
-                            }
-                        }));
+                return resp.json();
+            })
+            .then(json => {
+                console.log(json);
+                return json;
+            })
+            .then(connections => {
+                // We then go through each connection and start an asynchronous
+                // fetch to get TimeEdit details for each connection. This fills
+                // out state.searchObjects and allows us to present the search
+                // objects in a user-friendly format.
+                //
+                // We are only interested in connections applying to canvas_group
+                // CANVAS_GROUP, so we filter on this first.
+                // TODO: Move this to an API parameter
+                connections
+                    .filter(c => c.canvas_group === CANVAS_GROUP)
+                    .filter(c => !c.delete_flag) // TODO: Bug here, we need to make sure that the state is updated at least once for each call to refresh()
+                    .forEach(c => {
+                        fetch(
+                            `${process.env.TE_CANVAS_URL}/api/timeedit/object?extid=${c.te_group}`
+                        )
+                            .then(resp => {
+                                if (resp.status !== 200)
+                                    throw new Error(
+                                        `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
+                                    );
+                                return resp.json();
+                            })
+                            .then(data => {
+                                this.setState(prevState => ({
+                                    searchObjects: {
+                                        ...prevState.searchObjects,
+                                        [data.extid]: {
+                                            extid: data.extid,
+                                            type: data["type.name"],
+                                            id: data["general.id"],
+                                            title: data["general.title"]
+                                        }
+                                    }
+                                }));
+                            })
+                            .catch(e => console.error(e));
                     });
-                });
+            })
+            .catch(e => console.error(e));
+    }
+
+    feedback(message) {
+        this.setState({
+            feedbackMessage: message
         });
+        setTimeout(() => this.setState({ feedbackMessage: null }), 1500);
     }
 
     render() {
         return (
-            <MyContext.Provider value={{ refresh: this.refresh }}>
+            <MyContext.Provider
+                value={{ refresh: this.refresh, feedback: this.feedback }}
+            >
                 <InstUISettingsProvider theme={canvas}>
                     <div id="main">
                         <SearchObjects
@@ -81,10 +114,21 @@ class App extends React.Component {
                             searchObjects={this.state.searchObjects}
                         />
                         <AddNew />
+                        <Feedback message={this.state.feedbackMessage} />
                     </div>
                 </InstUISettingsProvider>
             </MyContext.Provider>
         );
+    }
+}
+
+class Feedback extends React.Component {
+    render() {
+        return this.props.message ? (
+            <Alert variant="error" margin="small">
+                {this.props.message}
+            </Alert>
+        ) : null;
     }
 }
 
@@ -110,16 +154,23 @@ class SearchObject extends React.Component {
     static contextType = MyContext; // Telling React that I want to use the context provider I have defined
 
     delete(id) {
-        let promise = fetch(
-            process.env.TE_CANVAS_URL +
-                `/api/connection?te_group=${id}&canvas_group=EXAMPLE`,
+        fetch(
+            `${process.env.TE_CANVAS_URL}/api/connection?te_group=${id}&canvas_group=${CANVAS_GROUP}`,
             {
                 method: "DELETE"
             }
-        );
-        parseResponse(promise, json => {
-            this.context.refresh();
-        });
+        )
+            .then(resp => {
+                // We only want to check for response code 204. Response 409 (where a
+                // connection has delete_flag set but has not been deleted yet) is not
+                // relevant since connections with delete_flag set are not shown.
+                if (resp.status !== 204)
+                    throw new Error(
+                        `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
+                    );
+                this.context.refresh();
+            })
+            .catch(e => console.error(e));
     }
 
     render() {
@@ -145,7 +196,7 @@ class SearchObject extends React.Component {
                     <div>{this.props.id}</div>
                     <Button
                         renderIcon={IconTrashLine}
-                        onClick={() => this.delete(this.props.id)}
+                        onClick={() => this.delete(this.props.extid)}
                     >
                         Remove
                     </Button>
@@ -203,15 +254,16 @@ class AddNewForm extends React.Component {
     componentDidMount() {
         let promise = fetch(process.env.TE_CANVAS_URL + "/api/timeedit/types");
         parseResponse(promise, json => {
-            console.log(json);
             this.setState({
-                types: Object.entries(json.data).map(([k, v]) => ({
+                types: Object.entries(json).map(([k, v]) => ({
                     extid: k,
                     title: v
                 })),
-                type: Object.keys(json.data).some(x => x === "courseevt")
+                // If the types include "courseevt" we set this as active.
+                // Otherwise just pick the first type.
+                type: Object.keys(json).some(x => x === "courseevt")
                     ? "courseevt"
-                    : Object.keys(json.data)[0]
+                    : Object.keys(json)[0]
             });
         });
     }
@@ -223,18 +275,37 @@ class AddNewForm extends React.Component {
     }
 
     submit() {
-        let promise = fetch(
+        fetch(
             process.env.TE_CANVAS_URL +
-                `/api/connection?te_group=${this.state.object}&canvas_group=EXAMPLE`,
+                `/api/connection?te_group=${this.state.object}&canvas_group=${CANVAS_GROUP}`,
             {
                 method: "POST"
             } // TODO: Does not work with "Content-Type" header added (CORS)
-        );
-        parseResponse(promise, json => {
-            console.log(json); // TODO: Should we give feedback?
-            this.props.setActive(false);
-            this.context.refresh();
-        });
+        )
+            .then(resp => {
+                switch (resp.status) {
+                    case 204: // Success, no content
+                        // We don't adjust the state manually, instead we fetch a new
+                        // state from the server. Since we wait for the POST fetch
+                        // to complete, we know that the following GET will include our
+                        // new connection.
+                        this.context.refresh();
+                        this.props.setActive(false);
+                        break;
+                    case 409: // Conflict, already exists
+                        // TODO: Maybe another case for when there is a
+                        // connection but its delete_flag is set, like on the
+                        // delete endpoint. I.e. if someone deletes and re-adds
+                        // a connection quickly.
+                        this.context.feedback("Connection already exists");
+                        break;
+                    default:
+                        throw new Error(
+                            `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
+                        );
+                }
+            })
+            .catch(e => console.error(e));
     }
 
     setObject(object) {
@@ -259,7 +330,11 @@ class AddNewForm extends React.Component {
                     onChange={this.handleSelect("type")}
                 >
                     {this.state.types.map(t => (
-                        <SimpleSelect.Option key={t.extid} id={t.extid} value={t.extid}>
+                        <SimpleSelect.Option
+                            key={t.extid}
+                            id={t.extid}
+                            value={t.extid}
+                        >
                             {t.title}
                         </SimpleSelect.Option>
                     ))}

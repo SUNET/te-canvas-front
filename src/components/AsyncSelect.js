@@ -1,4 +1,5 @@
 import React from "react";
+import { parseResponse } from "../util";
 
 import { Select, Spinner } from "@instructure/ui";
 
@@ -37,24 +38,15 @@ class AsyncSelect extends React.Component {
 
         if (search_string !== null) url += `&search_string=${search_string}`;
 
-        fetch(url)
-            .then(resp => {
-                if (resp.status !== 200)
-                    throw new Error(
-                        `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
-                    );
-                return resp.json();
-            })
-            .then(json => {
-                this.setState({
-                    options: json.data.map(x => ({
-                        id: x.extid,
-                        label: x["general.id"]
-                    })),
-                    isLoading: false
-                });
-            })
-            .catch(e => console.log(e));
+        parseResponse(fetch(url), json => {
+            this.setState({
+                options: json.map(x => ({
+                    id: x.extid,
+                    label: x["general.id"]
+                })),
+                isLoading: false
+            });
+        });
     }
 
     getOptionById(queryId) {
