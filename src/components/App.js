@@ -7,7 +7,6 @@ import {
     Heading,
     InstUISettingsProvider,
     SimpleSelect,
-    Spinner,
     View,
     canvas
 } from "@instructure/ui";
@@ -27,7 +26,6 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loading: true,
             searchObjects: {},
             feedbackMessage: null
         };
@@ -40,7 +38,7 @@ class App extends React.Component {
     }
 
     refresh() {
-        this.setState({ loading: true }); // TODO: Use a hook so that refresh() runs when this.state.loading is set to true
+        console.log("refresh");
         // This outer fetch gets a list of connections on the form
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
         fetch(process.env.TE_CANVAS_URL + "/api/connection")
@@ -93,12 +91,11 @@ class App extends React.Component {
                         promises.push(details);
                     });
 
-                return Promise.all(promises); // (1)
+                    return Promise.all(promises); // (1)
             })
             .then(searchObjects => {
                 this.setState({
-                    searchObjects: searchObjects,
-                    loading: false
+                    searchObjects: searchObjects
                 });
             })
             .catch(e => console.error(e)); // (2)
@@ -118,17 +115,10 @@ class App extends React.Component {
             >
                 <InstUISettingsProvider theme={canvas}>
                     <div id="main">
-                        <Heading border="bottom">TimeEdit Sync</Heading>
-                        {this.state.loading ? (
-                            <div id="loading">
-                                <Spinner size="small"/>
-                            </div>
-                        ) : (
-                            <SearchObjects
-                                refresh={this.refresh}
-                                searchObjects={this.state.searchObjects}
-                            />
-                        )}
+                        <SearchObjects
+                            refresh={this.refresh}
+                            searchObjects={this.state.searchObjects}
+                        />
                         <AddNew />
                         <Feedback message={this.state.feedbackMessage} />
                     </div>
@@ -152,6 +142,7 @@ class SearchObjects extends React.Component {
     render() {
         return (
             <>
+                <Heading border="bottom">TimeEdit Sync</Heading>
                 {Object.entries(this.props.searchObjects).map(([k, v]) => (
                     <SearchObject key={k} {...v} />
                 ))}

@@ -7,8 +7,3 @@
 .search-object div {
     width: 25%;
 }
-
-#loading {
-    display: flex;
-    justify-content: center;
-}
