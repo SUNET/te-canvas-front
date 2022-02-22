@@ -91,7 +91,7 @@ class App extends React.Component {
                         promises.push(details);
                     });
 
-                    return Promise.all(promises); // (1)
+                return Promise.all(promises); // (1)
             })
             .then(searchObjects => {
                 this.setState({
