@@ -50,7 +50,6 @@ class App extends React.Component {
                 return resp.json();
             })
             .then(json => {
-                console.log(json);
                 return json;
             })
             .then(connections => {
@@ -58,15 +57,17 @@ class App extends React.Component {
                 // fetch to get TimeEdit details for each connection. This fills
                 // out state.searchObjects and allows us to present the search
                 // objects in a user-friendly format.
-                //
-                // We are only interested in connections applying to canvas_group
-                // CANVAS_GROUP, so we filter on this first.
-                // TODO: Move this to an API parameter
+
+                let promises = [];
+
                 connections
+                    // We are only interested in connections applying to canvas_group
+                    // CANVAS_GROUP, so we filter on this first.
+                    // TODO: Move this to an API parameter
                     .filter(c => c.canvas_group === CANVAS_GROUP)
-                    .filter(c => !c.delete_flag) // TODO: Bug here, we need to make sure that the state is updated at least once for each call to refresh()
+                    .filter(c => !c.delete_flag)
                     .forEach(c => {
-                        fetch(
+                        let details = fetch(
                             `${process.env.TE_CANVAS_URL}/api/timeedit/object?extid=${c.te_group}`
                         )
                             .then(resp => {
@@ -76,23 +77,28 @@ class App extends React.Component {
                                     );
                                 return resp.json();
                             })
-                            .then(data => {
-                                this.setState(prevState => ({
-                                    searchObjects: {
-                                        ...prevState.searchObjects,
-                                        [data.extid]: {
-                                            extid: data.extid,
-                                            type: data["type.name"],
-                                            id: data["general.id"],
-                                            title: data["general.title"]
-                                        }
-                                    }
-                                }));
-                            })
-                            .catch(e => console.error(e));
+                            .then(data => ({
+                                extid: data.extid,
+                                type: data["type.name"],
+                                id: data["general.id"],
+                                title: data["general.title"]
+                            }))
+                            .catch(e => {
+                                // This will lead Promise.all to also reject at
+                                // (1), which is caught at (2).
+                                return Promise.reject(e);
+                            });
+                        promises.push(details);
                     });
+
+                    return Promise.all(promises); // (1)
             })
-            .catch(e => console.error(e));
+            .then(searchObjects => {
+                this.setState({
+                    searchObjects: searchObjects
+                });
+            })
+            .catch(e => console.error(e)); // (2)
     }
 
     feedback(message) {
