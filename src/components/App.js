@@ -41,7 +41,7 @@ class App extends React.Component {
         console.log("refresh");
         // This outer fetch gets a list of connections on the form
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
-        fetch(process.env.TE_CANVAS_URL + "/api/connection")
+        fetch(process.env.TE_CANVAS_URL + `/api/connection?canvas_group=${CANVAS_GROUP}`)
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
@@ -61,10 +61,6 @@ class App extends React.Component {
                 let promises = [];
 
                 connections
-                    // We are only interested in connections applying to canvas_group
-                    // CANVAS_GROUP, so we filter on this first.
-                    // TODO: Move this to an API parameter
-                    .filter(c => c.canvas_group === CANVAS_GROUP)
                     .filter(c => !c.delete_flag)
                     .forEach(c => {
                         let details = fetch(
