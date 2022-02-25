@@ -3,18 +3,20 @@ import { parseResponse, urlParams } from "../util";
 
 import { Select, Spinner } from "@instructure/ui";
 
+let initState = {
+    inputValue: "",
+    isShowingOptions: false,
+    isLoading: false,
+    highlightedOptionId: null,
+    selectedOptionId: null,
+    selectedOptionLabel: "",
+    options: []
+};
+
 class AsyncSelect extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            inputValue: "",
-            isShowingOptions: false,
-            isLoading: false,
-            highlightedOptionId: null,
-            selectedOptionId: null,
-            selectedOptionLabel: "",
-            options: []
-        };
+        this.state = initState;
 
         this.refresh = this.refresh.bind(this);
         this.getOptionById = this.getOptionById.bind(this);
@@ -28,7 +30,9 @@ class AsyncSelect extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        if (this.props.type !== prevProps.type) this.refresh(null);
+        if (this.props.type !== prevProps.type) {
+            this.setState(initState, () => this.refresh(null));
+        }
     }
 
     refresh(search_string) {
