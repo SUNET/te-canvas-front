@@ -116,7 +116,7 @@ class App extends React.Component {
             <MyContext.Provider
                 value={{
                     refresh: this.refresh,
-                    feedback: this.feedback,
+                    feedback: this.feedback
                 }}
             >
                 <InstUISettingsProvider theme={canvas}>
@@ -268,8 +268,7 @@ class AddNewForm extends React.Component {
 
     componentDidMount() {
         let promise = fetch(
-            urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/types", {
-            })
+            urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/types", {})
         );
         parseResponse(promise, json => {
             this.setState({
