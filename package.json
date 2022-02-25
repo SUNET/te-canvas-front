@@ -5,7 +5,7 @@
     "scripts": {
         "start": "env DEBUG=provider:* node src/lti.js",
         "build": "parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
-        "start-parcel": "parcel --port $PARCEL_PORT src/index.html"
+        "start-parcel": "NO_LTI=1 TE_CANVAS_URL=http://localhost:5000 parcel --port $PARCEL_PORT src/index.html"
     },
     "browserslist": "defaults",
     "keywords": [],

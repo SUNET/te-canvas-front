@@ -1,5 +1,5 @@
 import React from "react";
-import { parseResponse, MyContext, urlParams } from "../util";
+import { parseResponse, urlParams } from "../util";
 
 import { Select, Spinner } from "@instructure/ui";
 
@@ -27,8 +27,6 @@ class AsyncSelect extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
-    static contextType = MyContext;
-
     componentDidUpdate(prevProps) {
         if (this.props.type !== prevProps.type) this.refresh(null);
     }
@@ -37,7 +35,6 @@ class AsyncSelect extends React.Component {
         parseResponse(
             fetch(
                 urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/objects", {
-                    ltik: this.context.ltik,
                     type: this.props.type,
                     number_of_objects: 10,
                     ...(search_string === null

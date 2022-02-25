@@ -1,5 +1,5 @@
 import React from "react";
-import { parseResponse, getLtik, MyContext, urlParams } from "../util";
+import { parseResponse, MyContext, urlParams } from "../util";
 
 import {
     Alert,
@@ -28,8 +28,6 @@ class App extends React.Component {
             feedbackMessage: null
         };
 
-        this.ltik = getLtik();
-
         this.refresh = this.refresh.bind(this);
         this.feedback = this.feedback.bind(this);
     }
@@ -43,7 +41,6 @@ class App extends React.Component {
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
-                ltik: this.ltik,
                 canvas_group: CANVAS_GROUP
             })
         )
@@ -73,7 +70,6 @@ class App extends React.Component {
                                 process.env.TE_CANVAS_URL,
                                 "/api/timeedit/object",
                                 {
-                                    ltik: this.ltik,
                                     extid: c.te_group
                                 }
                             )
@@ -122,7 +118,6 @@ class App extends React.Component {
                 value={{
                     refresh: this.refresh,
                     feedback: this.feedback,
-                    ltik: this.ltik
                 }}
             >
                 <InstUISettingsProvider theme={canvas}>
@@ -174,7 +169,6 @@ class SearchObject extends React.Component {
     delete(id) {
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
-                ltik: this.context.ltik,
                 te_group: id,
                 canvas_group: CANVAS_GROUP
             }),
@@ -276,7 +270,6 @@ class AddNewForm extends React.Component {
     componentDidMount() {
         let promise = fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/types", {
-                ltik: this.context.ltik
             })
         );
         parseResponse(promise, json => {
@@ -303,7 +296,6 @@ class AddNewForm extends React.Component {
     submit() {
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
-                ltik: this.context.ltik,
                 te_group: this.state.object,
                 canvas_group: CANVAS_GROUP
             }),
