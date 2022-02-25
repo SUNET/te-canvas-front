@@ -44,6 +44,11 @@ lti.app.all("/api/*", function (req, res, next) {
     delete req.query.ltik;
     let params = new URLSearchParams(req.query);
 
+    // Substitute specified parameters with LTI custom properties
+    [...params.entries()]
+        .filter(([_, value]) => value === "LTI_CUSTOM_PROPERTY")
+        .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
+
     http.request(
         process.env.BACKEND_URL,
         {

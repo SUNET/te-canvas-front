@@ -17,9 +17,6 @@ import AsyncSelect from "./AsyncSelect";
 
 import "../style.css";
 
-// This will later be based on LTI info
-const CANVAS_GROUP = "168";
-
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -41,7 +38,9 @@ class App extends React.Component {
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
-                canvas_group: CANVAS_GROUP
+                // MAGIC STRING ALERT: This key will be replaced on the Express
+                // side with LTI custom parameter `canvas_group`.
+                canvas_group: "LTI_CUSTOM_PROPERTY"
             })
         )
             .then(resp => {
@@ -170,7 +169,7 @@ class SearchObject extends React.Component {
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
                 te_group: id,
-                canvas_group: CANVAS_GROUP
+                canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
             {
                 method: "DELETE"
@@ -297,7 +296,7 @@ class AddNewForm extends React.Component {
         fetch(
             urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
                 te_group: this.state.object,
-                canvas_group: CANVAS_GROUP
+                canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
             {
                 method: "POST"
