@@ -74,7 +74,7 @@ class AsyncSelect extends React.Component {
             }
         }
         // allow user to return to empty input and no selection
-        if (inputValue.length === 0) {
+        if (inputValue === "") {
             return { selectedOptionId: null };
         }
         // no match found, return selected option label to input
@@ -130,10 +130,10 @@ class AsyncSelect extends React.Component {
     handleInputChange(event) {
         const value = event.target.value;
 
-        if (!value || value === "") {
+        if (value === "") {
             this.setState({
                 isLoading: true,
-                inputValue: value,
+                inputValue: "",
                 isShowingOptions: true,
                 selectedOptionId: null,
                 selectedOptionLabel: null,
