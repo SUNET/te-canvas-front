@@ -1,3 +1,5 @@
+import React from "react";
+
 // Helper function for when you just want to check that the return code is 200
 // and get the body as JSON.
 export function parseResponse(fetchPromise, jsonCallback) {
@@ -12,3 +14,18 @@ export function parseResponse(fetchPromise, jsonCallback) {
         .then(jsonCallback)
         .catch(e => console.error(e));
 }
+
+export function getLtik() {
+    let searchParams = new URLSearchParams(window.location.search);
+    let ltik = searchParams.get("ltik");
+    if (!ltik) throw new Error("Missing lti key.");
+    return ltik;
+}
+
+export function urlParams(baseUrl, path, params) {
+    let url = new URL(path, baseUrl);
+    url.search = new URLSearchParams(params);
+    return url;
+}
+
+export let MyContext = React.createContext();

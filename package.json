@@ -3,8 +3,9 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "start": "parcel --port 8001 src/index.html",
-        "build": "parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html"
+        "start": "env DEBUG=provider:* node src/lti.js",
+        "build": "parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
+        "start-parcel": "parcel --port $PARCEL_PORT src/index.html"
     },
     "browserslist": "defaults",
     "keywords": [],
@@ -12,12 +13,13 @@
     "license": "ISC",
     "dependencies": {
         "@instructure/ui": "^8.16.0",
+        "ltijs": "^5.8.6",
         "parcel": "^2.0.0-rc.0",
         "prettier": "^2.3.2",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
-        "react-router-dom": "^5.3.0"
+        "react-router-dom": "^6.2.1"
     },
     "prettier": {
         "tabWidth": 4,

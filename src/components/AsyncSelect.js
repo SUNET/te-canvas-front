@@ -1,5 +1,5 @@
 import React from "react";
-import { parseResponse } from "../util";
+import { parseResponse, MyContext, urlParams } from "../util";
 
 import { Select, Spinner } from "@instructure/ui";
 
@@ -27,26 +27,34 @@ class AsyncSelect extends React.Component {
         this.handleInputChange = this.handleInputChange.bind(this);
     }
 
+    static contextType = MyContext;
+
     componentDidUpdate(prevProps) {
         if (this.props.type !== prevProps.type) this.refresh(null);
     }
 
     refresh(search_string) {
-        let url =
-            process.env.TE_CANVAS_URL +
-            `/api/timeedit/objects?type=${this.props.type}&number_of_objects=10`;
-
-        if (search_string !== null) url += `&search_string=${search_string}`;
-
-        parseResponse(fetch(url), json => {
-            this.setState({
-                options: json.map(x => ({
-                    id: x.extid,
-                    label: x["general.id"]
-                })),
-                isLoading: false
-            });
-        });
+        parseResponse(
+            fetch(
+                urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/objects", {
+                    ltik: this.context.ltik,
+                    type: this.props.type,
+                    number_of_objects: 10,
+                    ...(search_string === null
+                        ? {}
+                        : { search_string: search_string })
+                })
+            ),
+            json => {
+                this.setState({
+                    options: json.map(x => ({
+                        id: x.extid,
+                        label: x["general.id"]
+                    })),
+                    isLoading: false
+                });
+            }
+        );
     }
 
     getOptionById(queryId) {

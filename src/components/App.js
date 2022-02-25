@@ -1,5 +1,5 @@
 import React from "react";
-import { parseResponse } from "../util";
+import { parseResponse, getLtik, MyContext, urlParams } from "../util";
 
 import {
     Alert,
@@ -20,8 +20,6 @@ import "../style.css";
 // This will later be based on LTI info
 const CANVAS_GROUP = "168";
 
-let MyContext = React.createContext();
-
 class App extends React.Component {
     constructor(props) {
         super(props);
@@ -29,6 +27,9 @@ class App extends React.Component {
             searchObjects: {},
             feedbackMessage: null
         };
+
+        this.ltik = getLtik();
+
         this.refresh = this.refresh.bind(this);
         this.feedback = this.feedback.bind(this);
     }
@@ -38,10 +39,14 @@ class App extends React.Component {
     }
 
     refresh() {
-        console.log("refresh");
         // This outer fetch gets a list of connections on the form
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
-        fetch(process.env.TE_CANVAS_URL + `/api/connection?canvas_group=${CANVAS_GROUP}`)
+        fetch(
+            urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
+                ltik: this.ltik,
+                canvas_group: CANVAS_GROUP
+            })
+        )
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
@@ -64,7 +69,14 @@ class App extends React.Component {
                     .filter(c => !c.delete_flag)
                     .forEach(c => {
                         let details = fetch(
-                            `${process.env.TE_CANVAS_URL}/api/timeedit/object?extid=${c.te_group}`
+                            urlParams(
+                                process.env.TE_CANVAS_URL,
+                                "/api/timeedit/object",
+                                {
+                                    ltik: this.ltik,
+                                    extid: c.te_group
+                                }
+                            )
                         )
                             .then(resp => {
                                 if (resp.status !== 200)
@@ -107,7 +119,11 @@ class App extends React.Component {
     render() {
         return (
             <MyContext.Provider
-                value={{ refresh: this.refresh, feedback: this.feedback }}
+                value={{
+                    refresh: this.refresh,
+                    feedback: this.feedback,
+                    ltik: this.ltik
+                }}
             >
                 <InstUISettingsProvider theme={canvas}>
                     <div id="main">
@@ -157,7 +173,11 @@ class SearchObject extends React.Component {
 
     delete(id) {
         fetch(
-            `${process.env.TE_CANVAS_URL}/api/connection?te_group=${id}&canvas_group=${CANVAS_GROUP}`,
+            urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
+                ltik: this.context.ltik,
+                te_group: id,
+                canvas_group: CANVAS_GROUP
+            }),
             {
                 method: "DELETE"
             }
@@ -254,7 +274,11 @@ class AddNewForm extends React.Component {
     static contextType = MyContext;
 
     componentDidMount() {
-        let promise = fetch(process.env.TE_CANVAS_URL + "/api/timeedit/types");
+        let promise = fetch(
+            urlParams(process.env.TE_CANVAS_URL, "/api/timeedit/types", {
+                ltik: this.context.ltik
+            })
+        );
         parseResponse(promise, json => {
             this.setState({
                 types: Object.entries(json).map(([k, v]) => ({
@@ -278,8 +302,11 @@ class AddNewForm extends React.Component {
 
     submit() {
         fetch(
-            process.env.TE_CANVAS_URL +
-                `/api/connection?te_group=${this.state.object}&canvas_group=${CANVAS_GROUP}`,
+            urlParams(process.env.TE_CANVAS_URL, "/api/connection", {
+                ltik: this.context.ltik,
+                te_group: this.state.object,
+                canvas_group: CANVAS_GROUP
+            }),
             {
                 method: "POST"
             } // TODO: Does not work with "Content-Type" header added (CORS)
