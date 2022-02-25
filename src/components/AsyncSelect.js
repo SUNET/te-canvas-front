@@ -1,7 +1,8 @@
 import React from "react";
-import { parseResponse, urlParams } from "../util";
 
 import { Select, Spinner } from "@instructure/ui";
+
+import { parseResponse, urlParams } from "../util";
 
 let initState = {
     inputValue: "",

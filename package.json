@@ -24,7 +24,10 @@
     "prettier": {
         "tabWidth": 4,
         "trailingComma": "none",
-        "arrowParens": "avoid"
+        "arrowParens": "avoid",
+        "importOrder": ["^react", "^@instructure", "^[^.]", ".*"],
+        "importOrderSeparation": true,
+        "importOrderSortSpecifiers": true
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^3.2.0"

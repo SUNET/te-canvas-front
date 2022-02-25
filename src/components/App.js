@@ -1,5 +1,4 @@
 import React from "react";
-import { parseResponse, MyContext, urlParams } from "../util";
 
 import {
     Alert,
@@ -10,12 +9,11 @@ import {
     View,
     canvas
 } from "@instructure/ui";
-
-import { IconTrashLine, IconPlusLine } from "@instructure/ui-icons";
-
-import AsyncSelect from "./AsyncSelect";
+import { IconPlusLine, IconTrashLine } from "@instructure/ui-icons";
 
 import "../style.css";
+import { MyContext, parseResponse, urlParams } from "../util";
+import AsyncSelect from "./AsyncSelect";
 
 class App extends React.Component {
     constructor(props) {
