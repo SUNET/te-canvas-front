@@ -15,7 +15,6 @@
         "@instructure/ui": "^8.16.0",
         "ltijs": "^5.8.6",
         "parcel": "^2.0.0-rc.0",
-        "prettier": "^2.3.2",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
@@ -25,11 +24,17 @@
         "tabWidth": 4,
         "trailingComma": "none",
         "arrowParens": "avoid",
-        "importOrder": ["^react", "^@instructure", "^[^.]", ".*"],
+        "importOrder": [
+            "^react",
+            "^@instructure",
+            "^[^.]",
+            ".*"
+        ],
         "importOrderSeparation": true,
         "importOrderSortSpecifiers": true
     },
     "devDependencies": {
-        "@trivago/prettier-plugin-sort-imports": "^3.2.0"
+        "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+        "prettier": "^2.5.1"
     }
 }
