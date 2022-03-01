@@ -51,7 +51,11 @@ class AsyncSelect extends React.Component {
                 this.setState({
                     options: json.map(x => ({
                         id: x.extid,
-                        label: x["general.id"]
+                        label:
+                            x["general.id"] +
+                            (x.hasOwnProperty("general.title")
+                                ? ` | ${x["general.title"]}`
+                                : "")
                     })),
                     isLoading: false
                 });
@@ -170,7 +174,8 @@ class AsyncSelect extends React.Component {
         return (
             <div>
                 <Select
-                    renderLabel="Object ID"
+                    renderLabel=""
+                    placeholder="Start typing to search..."
                     assistiveText="Type to search"
                     inputValue={inputValue}
                     isShowingOptions={isShowingOptions}
