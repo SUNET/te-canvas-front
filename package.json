@@ -3,9 +3,9 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "start": "env DEBUG=provider:* node src/lti.js",
-        "build": "parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
-        "start-parcel": "NO_LTI=1 TE_CANVAS_URL=http://localhost:5000 parcel --port $PARCEL_PORT src/index.html"
+        "start": "DEBUG=provider:* node src/lti.js",
+        "build": "BACKEND_URL=$EXPRESS_URL parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
+        "start-parcel": "BACKEND_URL=$FLASK_URL NO_LTI=1 parcel --port 8000 src/index.html"
     },
     "browserslist": "defaults",
     "keywords": [],

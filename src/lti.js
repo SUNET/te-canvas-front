@@ -11,7 +11,7 @@ lti.setup(
     crypto.randomBytes(48).toString("hex"), // Key used to sign cookies and tokens
     {
         // Database configuration
-        url: `mongodb://localhost:${process.env.MONGO_PORT}`,
+        url: process.env.MONGO_URL,
         connection: {
             user: process.env.MONGO_USERNAME,
             pass: process.env.MONGO_PASSWORD
@@ -50,7 +50,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
     http.request(
-        process.env.BACKEND_URL,
+        process.env.FLASK_URL,
         {
             path: req.path + "?" + params.toString(),
             method: req.method
@@ -67,7 +67,7 @@ lti.app.all("/api/*", function (req, res, next) {
 
 async function setup() {
     // Deploy server and open connection to the database
-    await lti.deploy({ port: process.env.EXPRESS_PORT });
+    await lti.deploy({ port: 8000 });
 
     // Register platform
     await lti.registerPlatform({
