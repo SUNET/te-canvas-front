@@ -309,12 +309,9 @@ class AddNewForm extends React.Component {
                         this.context.refresh();
                         this.props.setActive(false);
                         break;
-                    case 409: // Conflict, already exists
-                        // TODO: Maybe another case for when there is a
-                        // connection but its delete_flag is set, like on the
-                        // delete endpoint. I.e. if someone deletes and re-adds
-                        // a connection quickly.
-                        this.context.feedback("Connection already exists");
+                    case 404: // Already exists
+                    case 409:
+                        resp.json().then(json => this.context.feedback(json.message));
                         break;
                     default:
                         throw new Error(
