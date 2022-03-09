@@ -106,7 +106,7 @@ class App extends React.Component {
         this.setState({
             feedbackMessage: message
         });
-        setTimeout(() => this.setState({ feedbackMessage: null }), 1500);
+        setTimeout(() => this.setState({ feedbackMessage: null }), 2000);
     }
 
     render() {
