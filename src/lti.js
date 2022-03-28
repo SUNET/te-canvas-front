@@ -2,10 +2,8 @@ let crypto = require("crypto");
 let path = require("path");
 let http = require("http");
 
-// Require Provider
 let lti = require("ltijs").Provider;
 
-// Setup provider
 // TODO: Not configured for production
 lti.setup(
     crypto.randomBytes(48).toString("hex"), // Key used to sign cookies and tokens
@@ -20,21 +18,19 @@ lti.setup(
     {
         // Options
         appRoute: "/",
-        loginRoute: "/login", // Optionally, specify some of the reserved routes
+        loginRoute: "/login",
         cookies: {
-            secure: false, // Set secure to true if the testing platform is in a different domain and https is being used
-            sameSite: "" // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
+            secure: false,
+            sameSite: ""
         },
-        devMode: true, // Set DevMode to false if running in a production environment with https
-        staticPath: path.join(__dirname, "../dist"), // Serve static files (React app) from ../dist
+        devMode: true,
+        staticPath: path.join(__dirname, "../dist"),
         tokenMaxAge: 60 // TODO: Default is 10
     }
 );
 
-// Set lti launch callback
 // This just redirects "/" to "/index.html"
 lti.onConnect((token, req, res, next) => {
-    console.log("onConnect");
     return lti.redirect(res, "/index.html");
 });
 
@@ -67,10 +63,8 @@ lti.app.all("/api/*", function (req, res, next) {
 });
 
 async function setup() {
-    // Deploy server and open connection to the database
     await lti.deploy({ port: 8000 });
 
-    // Register platform
     await lti.registerPlatform({
         name: process.env.PLATFORM_NAME,
         clientId: process.env.CLIENT_ID,
