@@ -312,7 +312,9 @@ class AddNewForm extends React.Component {
                         break;
                     case 404: // Already exists
                     case 409:
-                        resp.json().then(json => this.context.feedback(json.message));
+                        resp.json().then(json =>
+                            this.context.feedback(json.message)
+                        );
                         break;
                     default:
                         throw new Error(
