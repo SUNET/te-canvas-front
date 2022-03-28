@@ -20,10 +20,9 @@ lti.setup(
         appRoute: "/",
         loginRoute: "/login",
         cookies: {
-            secure: false,
-            sameSite: ""
+            secure: true,
+            sameSite: "None"
         },
-        devMode: true,
         staticPath: path.join(__dirname, "../dist"),
     }
 );
