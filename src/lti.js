@@ -26,7 +26,8 @@ lti.setup(
             sameSite: "" // Set sameSite to 'None' if the testing platform is in a different domain and https is being used
         },
         devMode: true, // Set DevMode to false if running in a production environment with https
-        staticPath: path.join(__dirname, "../dist") // Serve static files (React app) from ../dist
+        staticPath: path.join(__dirname, "../dist"), // Serve static files (React app) from ../dist
+        tokenMaxAge: 60 // TODO: Default is 10
     }
 );
 
