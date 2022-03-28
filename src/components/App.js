@@ -80,7 +80,7 @@ class App extends React.Component {
                             })
                             .then(data => ({
                                 extid: data.extid,
-                                type: data["type.name"],
+                                type: "TODO", // TODO: Get type name from c.te_type extid
                                 id: data["general.id"],
                                 title: data["general.title"]
                             }))
@@ -293,6 +293,7 @@ class AddNewForm extends React.Component {
         fetch(
             urlParams(process.env.BACKEND_URL, "/api/connection", {
                 te_group: this.state.object,
+                te_type: this.state.type,
                 canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
             {
