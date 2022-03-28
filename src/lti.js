@@ -75,6 +75,7 @@ async function setup() {
         clientId: process.env.CLIENT_ID,
         url: process.env.CANVAS_URL,
         authenticationEndpoint: process.env.CANVAS_AUTH_ENDPOINT,
+        accesstokenEndpoint: process.env.CANVAS_TOKEN_ENDPOINT,
         authConfig: {
             method: "JWK_SET",
             key: process.env.CANVAS_JWK_ENDPOINT
