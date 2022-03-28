@@ -25,7 +25,6 @@ lti.setup(
         },
         devMode: true,
         staticPath: path.join(__dirname, "../dist"),
-        tokenMaxAge: 60 // TODO: Default is 10
     }
 );
 
