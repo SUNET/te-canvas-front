@@ -23,7 +23,7 @@ lti.setup(
             secure: true,
             sameSite: "None"
         },
-        staticPath: path.join(__dirname, "../dist"),
+        staticPath: path.join(__dirname, "../dist")
     }
 );
 
