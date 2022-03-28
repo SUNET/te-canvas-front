@@ -4,6 +4,14 @@ let http = require("http");
 
 let lti = require("ltijs").Provider;
 
+const CANVAS_URL = "https://canvas.instructure.com";
+const CANVAS_AUTH_ENDPOINT =
+    "https://canvas.instructure.com/api/lti/authorize_redirect";
+const CANVAS_TOKEN_ENDPOINT =
+    "https://canvas.instructure.com/login/oauth2/token";
+const CANVAS_JWK_ENDPOINT =
+    "https://canvas.instructure.com/api/lti/security/jwks";
+
 // TODO: Not configured for production
 lti.setup(
     crypto.randomBytes(48).toString("hex"), // Key used to sign cookies and tokens
@@ -66,12 +74,12 @@ async function setup() {
     await lti.registerPlatform({
         name: process.env.PLATFORM_NAME,
         clientId: process.env.CLIENT_ID,
-        url: process.env.CANVAS_URL,
-        authenticationEndpoint: process.env.CANVAS_AUTH_ENDPOINT,
-        accesstokenEndpoint: process.env.CANVAS_TOKEN_ENDPOINT,
+        url: CANVAS_URL,
+        authenticationEndpoint: CANVAS_AUTH_ENDPOINT,
+        accesstokenEndpoint: CANVAS_TOKEN_ENDPOINT,
         authConfig: {
             method: "JWK_SET",
-            key: process.env.CANVAS_JWK_ENDPOINT
+            key: CANVAS_JWK_ENDPOINT
         }
     });
 }
