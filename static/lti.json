@@ -1,0 +1,29 @@
+{
+    "title": "TimeEdit Sync",
+    "scopes": [],
+    "extensions": [
+        {
+            "domain": "localhost",
+            "tool_id": "timeedit-sync",
+            "platform": "canvas.instructure.com",
+            "privacy_level": "anonymous",
+            "settings": {
+                "placements": [
+                    {
+                        "placement": "course_navigation",
+                        "message_type": "LtiResourceLinkRequest"
+                    }
+                ],
+                "selection_width": 800,
+                "selection_height": 800
+            }
+        }
+    ],
+    "description": "Sync calendar events from TimeEdit.",
+    "custom_fields": {
+        "canvas_group": "$Canvas.course.id"
+    },
+    "target_link_uri": "https://localhost",
+    "oidc_initiation_url": "https://localhost/login",
+    "public_jwk_url": "https://localhost/keys"
+}
