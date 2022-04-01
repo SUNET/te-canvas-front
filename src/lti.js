@@ -14,7 +14,7 @@ const CANVAS_JWK_ENDPOINT =
 
 // TODO: Not configured for production
 lti.setup(
-    crypto.randomBytes(48).toString("hex"), // Key used to sign cookies and tokens
+    process.env.LTI_KEY, // Key used to sign cookies and tokens
     {
         // Database configuration
         url: process.env.MONGO_URL,
