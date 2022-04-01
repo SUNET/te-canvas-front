@@ -11,7 +11,8 @@
                 "placements": [
                     {
                         "placement": "course_navigation",
-                        "message_type": "LtiResourceLinkRequest"
+                        "message_type": "LtiResourceLinkRequest",
+                        "visibility": "admins"
                     }
                 ],
                 "selection_width": 800,
