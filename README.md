@@ -5,7 +5,7 @@
 Export the following env vars:
 
 ```
-FLASK_URL
+API_URL
 ```
 
 Get dependencies:
@@ -25,8 +25,7 @@ npm run start-parcel
 Export the following env vars:
 
 ```
-EXPRESS_URL
-FLASK_URL
+LTI_URL
 
 MONGO_URL
 MONGO_USERNAME
@@ -87,14 +86,14 @@ npm run start
 │         │                                      │
 │         │                                      ▼
 │         │                            ┌───────────────────────┐             ┌───────────────────────┐
-│         │                            │ Express server        │             │ Flask server          │
-│         │                            │                       │             │                       │
-│         │                            │ With nginx in front   │             │ No own auth, trust    │
-│         │                            │ for TLS termination   │             │ all requests          │
+│         │                            │ LTI server            │             │ API server (Flask)    │
+│         │                            │ (Express, nginx)      │             │                       │
+│         │                            │                       │             │ No own auth, trust    │
+│         │                            │                       │             │ all requests          │
 │         │                            │                       │             │ implicitly            │
 │         │                            │                       │             │                       │
 │         │                            │                       │             │ So, only reachable    │
-│         │      React app + JWT       │                       │             │ from Express server   │
+│         │      React app + JWT       │                       │             │ from LTI server       │
 │         │◄───────────────────────────┤                       │             │                       │
 │         │                            │                       │             │                       │
 │         │                            │                       │             │                       │
