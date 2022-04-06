@@ -53,7 +53,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
     http.request(
-        process.env.FLASK_URL,
+        process.env.API_URL,
         {
             path: req.path + "?" + params.toString(),
             method: req.method

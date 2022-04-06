@@ -35,7 +35,7 @@ class App extends React.Component {
         // This outer fetch gets a list of connections on the form
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
         fetch(
-            urlParams(process.env.BACKEND_URL, "/api/connection", {
+            urlParams(window.injectedEnv.BACKEND_URL, "/api/connection", {
                 // MAGIC STRING ALERT: This key will be replaced on the Express
                 // side with LTI custom parameter `canvas_group`.
                 canvas_group: "LTI_CUSTOM_PROPERTY"
@@ -64,7 +64,7 @@ class App extends React.Component {
                     .forEach(c => {
                         let details = fetch(
                             urlParams(
-                                process.env.BACKEND_URL,
+                                window.injectedEnv.BACKEND_URL,
                                 "/api/timeedit/object",
                                 {
                                     extid: c.te_group
@@ -165,7 +165,7 @@ class SearchObject extends React.Component {
 
     delete(id) {
         fetch(
-            urlParams(process.env.BACKEND_URL, "/api/connection", {
+            urlParams(window.injectedEnv.BACKEND_URL, "/api/connection", {
                 te_group: id,
                 canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
@@ -267,7 +267,7 @@ class AddNewForm extends React.Component {
 
     componentDidMount() {
         let promise = fetch(
-            urlParams(process.env.BACKEND_URL, "/api/timeedit/types", {})
+            urlParams(window.injectedEnv.BACKEND_URL, "/api/timeedit/types", {})
         );
         parseResponse(promise, json => {
             this.setState({
@@ -292,7 +292,7 @@ class AddNewForm extends React.Component {
 
     submit() {
         fetch(
-            urlParams(process.env.BACKEND_URL, "/api/connection", {
+            urlParams(window.injectedEnv.BACKEND_URL, "/api/connection", {
                 te_group: this.state.object,
                 te_type: this.state.type,
                 canvas_group: "LTI_CUSTOM_PROPERTY"

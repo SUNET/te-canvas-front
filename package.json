@@ -4,10 +4,13 @@
     "description": "",
     "scripts": {
         "start": "DEBUG=provider:* node src/lti.js",
-        "build": "BACKEND_URL=$EXPRESS_URL parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
-        "start-parcel": "BACKEND_URL=$FLASK_URL NO_LTI=1 parcel --port 8000 src/index.html"
+        "build": "BACKEND_URL=$LTI_URL parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
+        "start-parcel": "BACKEND_URL=$API_URL NO_LTI=1 parcel --port 8000 src/index.html"
     },
     "browserslist": "defaults",
+    "parcelIgnore": [
+        "inject.js"
+    ],
     "keywords": [],
     "author": "",
     "license": "ISC",
@@ -15,10 +18,14 @@
         "@instructure/ui": "^8.16.0",
         "ltijs": "^5.8.6",
         "parcel": "^2.0.0-rc.0",
+        "parcel-resolver-ignore": "2.0.0",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
         "react-router-dom": "^6.2.1"
+    },
+    "dependenciesComments": {
+        "parcel-resolver-ignore": "Very small package so its version is pinned, do not update without reading source code"
     },
     "prettier": {
         "tabWidth": 4,

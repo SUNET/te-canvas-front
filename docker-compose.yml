@@ -4,5 +4,30 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "$MONGO_USERNAME"
       MONGO_INITDB_ROOT_PASSWORD: "$MONGO_PASSWORD"
+    networks: [ te-canvas ]
+    # TODO: Remove
     ports:
       - "127.0.0.1:27017:27017"
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile_node
+    depends_on: [ mongo ]
+    environment:
+      - LTI_URL
+      - API_URL
+
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+
+      - PLATFORM_NAME
+      - CLIENT_ID
+      - LTI_KEY
+    networks: [ te-canvas ]
+    # TODO: Remove
+    ports:
+      - "127.0.0.1:8000:8000"
+networks:
+  te-canvas:
+    external: true
