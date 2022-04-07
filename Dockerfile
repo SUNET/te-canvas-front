@@ -5,13 +5,13 @@ FROM node
 
 WORKDIR /usr/src/app
 
-COPY package*.json .
+COPY package*.json ./
 RUN npm install
 
-COPY src src
-COPY .parcelrc .
+COPY src ./src/
+COPY .parcelrc ./
 RUN npm run build
 
-COPY inject_template.js inject.bash start.bash .
+COPY inject_template.js inject.bash start.bash ./
 RUN apt update && apt install -y gettext
 CMD ./start.bash
