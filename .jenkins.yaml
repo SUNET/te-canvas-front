@@ -1,0 +1,3 @@
+builders:
+  - docker
+docker_name: te-canvas-front
