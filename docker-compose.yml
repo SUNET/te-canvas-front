@@ -25,6 +25,7 @@ services:
 
   nginx:
     image: nginx
+    depends_on: [ node ]
     volumes:
       - ./nginx-docker.conf:/etc/nginx/nginx.conf
       - ./localhost.crt:/etc/nginx/localhost.crt
