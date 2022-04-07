@@ -26,6 +26,7 @@ Export the following env vars:
 
 ```
 LTI_URL
+API_URL
 
 MONGO_URL
 MONGO_USERNAME
@@ -52,7 +53,7 @@ nginx -p . -c nginx.conf
 Start MongoDB:
 
 ```
-docker-compose up -d
+docker-compose up -d mongo
 ```
 
 Get dependencies:
