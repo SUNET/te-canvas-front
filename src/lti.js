@@ -35,14 +35,28 @@ lti.setup(
     }
 );
 
-// This just redirects "/" to "/index.html"
+// This just redirects "/" to "/index.html". The access check here is more for
+// UI than for security. The important check is before passing requests to the
+// API, set up in the block below this.
 lti.onConnect((token, req, res, next) => {
+    console.log("[IDTOKEN] " + JSON.stringify(token, null, 4)); // TODO: Remove
+    if (!res.locals.context.roles.includes("http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")) {
+        res.sendStatus(401);
+        return;
+    }
     return lti.redirect(res, "/index.html");
 });
 
 // Forward API requests to Python backend. Only the Express server will have
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function (req, res, next) {
+
+    // Check that the user is an admin
+    if (!res.locals.context.roles.includes("http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")) {
+        res.sendStatus(401);
+        return;
+    }
+
     // Strip ltik (there is full trust between Express and Python backend)
     delete req.query.ltik;
     let params = new URLSearchParams(req.query);
