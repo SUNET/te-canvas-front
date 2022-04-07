@@ -21,6 +21,7 @@ services:
       - PLATFORM_NAME
       - CLIENT_ID
       - LTI_KEY
+      - AUTHORIZED_ROLES
     networks: [ te-canvas ]
 
   nginx:

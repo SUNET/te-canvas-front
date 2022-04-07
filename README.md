@@ -35,6 +35,7 @@ MONGO_PASSWORD
 PLATFORM_NAME
 CLIENT_ID
 LTI_KEY
+AUTHORIZED_ROLES
 ```
 
 Create (and trust) the following self-signed cert:

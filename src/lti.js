@@ -12,6 +12,8 @@ const CANVAS_TOKEN_ENDPOINT =
 const CANVAS_JWK_ENDPOINT =
     "https://canvas.instructure.com/api/lti/security/jwks";
 
+const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
+
 // TODO: Not configured for production
 lti.setup(
     process.env.LTI_KEY, // Key used to sign cookies and tokens
@@ -35,12 +37,21 @@ lti.setup(
     }
 );
 
+function checkRoles(roles) {
+    for (let r of AUTHORIZED_ROLES) {
+        if (roles.includes(r)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // This just redirects "/" to "/index.html". The access check here is more for
 // UI than for security. The important check is before passing requests to the
 // API, set up in the block below this.
 lti.onConnect((token, req, res, next) => {
     console.log("[IDTOKEN] " + JSON.stringify(token, null, 4)); // TODO: Remove
-    if (!res.locals.context.roles.includes("http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")) {
+    if (!checkRoles(res.locals.context.roles)) {
         res.sendStatus(401);
         return;
     }
@@ -51,8 +62,8 @@ lti.onConnect((token, req, res, next) => {
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function (req, res, next) {
 
-    // Check that the user is an admin
-    if (!res.locals.context.roles.includes("http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator")) {
+    // Check that the user has an authorized role
+    if (!checkRoles(res.locals.context.roles)) {
         res.sendStatus(401);
         return;
     }
