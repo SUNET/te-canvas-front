@@ -1,13 +1,12 @@
 services:
+
   mongo:
     image: "mongo"
     environment:
       MONGO_INITDB_ROOT_USERNAME: "$MONGO_USERNAME"
       MONGO_INITDB_ROOT_PASSWORD: "$MONGO_PASSWORD"
     networks: [ te-canvas ]
-    # TODO: Remove
-    ports:
-      - "127.0.0.1:27017:27017"
+
   node:
     build:
       context: .
@@ -25,9 +24,17 @@ services:
       - CLIENT_ID
       - LTI_KEY
     networks: [ te-canvas ]
-    # TODO: Remove
+
+  nginx:
+    image: "nginx"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+      - "./localhost.crt:/etc/nginx/localhost.crt"
+      - "./localhost.key:/etc/nginx/localhost.key"
+    networks: [ te-canvas ]
     ports:
-      - "127.0.0.1:8000:8000"
+      - "127.0.0.1:443:443"
+
 networks:
   te-canvas:
     external: true
