@@ -75,6 +75,42 @@ Start Express server:
 npm run start
 ```
 
+## Docker (LTI)
+
+Export the following env vars:
+
+```
+LTI_URL
+
+MONGO_URL
+MONGO_USERNAME
+MONGO_PASSWORD
+
+PLATFORM_NAME
+CLIENT_ID
+LTI_KEY
+AUTHORIZED_ROLES
+```
+
+Create (and trust) the following self-signed cert:
+
+```
+localhost.crt
+localhost.key
+```
+
+Compile React app and start Express server, MongoDB, and Nginx:
+
+```
+docker-compose up
+```
+
+To start Docker in production mode, without exposed ports and using prebuilt images:
+
+```
+docker-compose -f docker-compose.yml up
+```
+
 ## LTI architecture
 
 ```

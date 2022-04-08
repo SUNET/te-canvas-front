@@ -8,11 +8,11 @@ services:
     networks: [ te-canvas ]
 
   node:
-    build: .
+    image: docker.sunet.se/te-canvas-front
     depends_on: [ mongo ]
     environment:
       - LTI_URL
-      - API_URL
+      - API_URL=http://api:5000
 
       - MONGO_URL=mongodb://mongo:27017
       - MONGO_USERNAME
