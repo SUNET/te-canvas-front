@@ -4,3 +4,6 @@ services:
   node:
     build: .
     ports: [ 127.0.0.1:8000:8000 ]
+networks:
+  te-canvas:
+    external: true
