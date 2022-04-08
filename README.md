@@ -41,8 +41,8 @@ AUTHORIZED_ROLES
 Create (and trust) the following self-signed cert:
 
 ```
-localhost.crt
-localhost.key
+ssl.crt
+ssl.key
 ```
 
 Start nginx:
@@ -95,8 +95,8 @@ AUTHORIZED_ROLES
 Create (and trust) the following self-signed cert:
 
 ```
-localhost.crt
-localhost.key
+ssl.crt
+ssl.key
 ```
 
 Compile React app and start Express server, MongoDB, and Nginx:
