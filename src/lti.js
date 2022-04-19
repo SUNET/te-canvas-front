@@ -14,7 +14,6 @@ const CANVAS_JWK_ENDPOINT =
 
 const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
 
-// TODO: Not configured for production
 lti.setup(
     process.env.LTI_KEY, // Key used to sign cookies and tokens
     {
