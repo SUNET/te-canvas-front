@@ -39,13 +39,17 @@ class AsyncSelect extends React.Component {
     refresh(search_string) {
         parseResponse(
             fetch(
-                urlParams(window.injectedEnv.BACKEND_URL, "/api/timeedit/objects", {
-                    type: this.props.type,
-                    number_of_objects: 10,
-                    ...(search_string === null
-                        ? {}
-                        : { search_string: search_string })
-                })
+                urlParams(
+                    window.injectedEnv.BACKEND_URL,
+                    "/api/timeedit/objects",
+                    {
+                        type: this.props.type,
+                        number_of_objects: 10,
+                        ...(search_string === null
+                            ? {}
+                            : { search_string: search_string })
+                    }
+                )
             ),
             json => {
                 this.setState({
