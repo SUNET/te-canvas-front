@@ -33,7 +33,7 @@ services:
       - ./ssl.key:/etc/nginx/ssl.key
       - ./lti.json:/www/data/lti.json
     networks: [ te-canvas ]
-    ports: [ 127.0.0.1:443:443 ]
+    ports: [ 443:443 ]
 
 networks:
   te-canvas:
