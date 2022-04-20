@@ -31,6 +31,7 @@ services:
       - ./nginx-docker.conf:/etc/nginx/nginx.conf
       - ./ssl.crt:/etc/nginx/ssl.crt
       - ./ssl.key:/etc/nginx/ssl.key
+      - ./static/lti.json:/www/data/lti.json
     networks: [ te-canvas ]
     ports: [ 127.0.0.1:443:443 ]
 
