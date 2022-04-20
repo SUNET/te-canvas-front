@@ -204,7 +204,7 @@ class SearchObject extends React.Component {
                         alignItems: "center"
                     }}
                 >
-                    <div>{this.props.type}</div>
+                    {/* <div>{this.props.type}</div> */}
                     <div>{this.props.title}</div>
                     <div>{this.props.id}</div>
                     <div>{this.props.extid}</div>
