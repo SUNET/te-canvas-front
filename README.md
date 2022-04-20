@@ -82,7 +82,7 @@ Export the following env vars:
 ```
 LTI_URL
 
-MONGO_URL
+MONGO_URL*
 MONGO_USERNAME
 MONGO_PASSWORD
 
@@ -90,6 +90,8 @@ PLATFORM_NAME
 CLIENT_ID
 ENCRYPTION_KEY
 AUTHORIZED_ROLES
+
+* Predifined in docker-compose file
 ```
 
 Create (and trust) the following self-signed cert:
