@@ -15,7 +15,7 @@ const CANVAS_JWK_ENDPOINT =
 const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
 
 lti.setup(
-    process.env.LTI_KEY, // Key used to sign cookies and tokens
+    process.env.ENCRYPTION_KEY, // Key used to sign cookies and tokens
     {
         // Database configuration
         url: process.env.MONGO_URL,
