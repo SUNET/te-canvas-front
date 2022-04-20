@@ -3,7 +3,7 @@
     "scopes": [],
     "extensions": [
         {
-            "domain": "localhost",
+            "domain": "te-canvas.sunet.se",
             "tool_id": "timeedit-sync",
             "platform": "canvas.instructure.com",
             "privacy_level": "anonymous",
@@ -24,7 +24,7 @@
     "custom_fields": {
         "canvas_group": "$Canvas.course.id"
     },
-    "target_link_uri": "https://localhost",
-    "oidc_initiation_url": "https://localhost/login",
-    "public_jwk_url": "https://localhost/keys"
+    "target_link_uri": "https://te-canvas.sunet.se",
+    "oidc_initiation_url": "https://te-canvas.sunet.se/login",
+    "public_jwk_url": "https://te-canvas.sunet.se/keys"
 }
