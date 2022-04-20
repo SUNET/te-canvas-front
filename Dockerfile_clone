@@ -1,0 +1,13 @@
+# Build: React app
+# Run: Inject env vars and start Express server
+
+FROM node
+
+RUN git clone https://github.com/SUNET/te-canvas-front.git /usr/src/app
+WORKDIR /usr/src/app
+
+RUN apt update && apt install -y gettext
+RUN npm install
+RUN npm run build
+
+CMD ./start.bash
