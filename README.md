@@ -81,7 +81,6 @@ Export the following env vars:
 
 ```
 LTI_URL
-LTI_PORT
 
 MONGO_URL*
 MONGO_USERNAME

@@ -1,0 +1,17 @@
+services:
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./nginx-docker.conf:/etc/nginx/nginx.conf
+      - ./ssl.crt:/etc/nginx/ssl.crt
+      - ./ssl.key:/etc/nginx/ssl.key
+      - ./lti-sunet.json:/www/data/sunet/lti.json
+    networks:
+      - external
+    ports: [ 443:443 ]
+
+networks:
+  external:
+    external: true
