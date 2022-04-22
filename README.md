@@ -92,7 +92,7 @@ CLIENT_ID
 ENCRYPTION_KEY
 AUTHORIZED_ROLES
 
-* Predifined in docker-compose file
+* Predefined in docker-compose file
 ```
 
 Create (and trust) the following self-signed cert:
