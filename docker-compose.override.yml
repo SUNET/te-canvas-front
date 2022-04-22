@@ -1,3 +1,6 @@
 services:
   node:
     build: .
+networks:
+  te-canvas:
+    external: true

@@ -24,7 +24,7 @@
     "custom_fields": {
         "canvas_group": "$Canvas.course.id"
     },
-    "target_link_uri": "https://te-canvas.sunet.se/sunet",
-    "oidc_initiation_url": "https://te-canvas.sunet.se/sunet/login",
-    "public_jwk_url": "https://te-canvas.sunet.se/sunet/keys"
+    "target_link_uri": "https://te-canvas.sunet.se",
+    "oidc_initiation_url": "https://te-canvas.sunet.se/login",
+    "public_jwk_url": "https://te-canvas.sunet.se/keys"
 }
