@@ -5,7 +5,6 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
-    networks: [ te-canvas ]
 
   node:
     image: docker.sunet.se/te-canvas-front
@@ -22,7 +21,6 @@ services:
       - CLIENT_ID
       - ENCRYPTION_KEY
       - AUTHORIZED_ROLES
-    networks: [ te-canvas ]
 
   nginx:
     image: nginx
@@ -32,8 +30,4 @@ services:
       - ./ssl.crt:/etc/nginx/ssl.crt
       - ./ssl.key:/etc/nginx/ssl.key
       - ./lti.json:/www/data/lti.json
-    networks: [ te-canvas ]
     ports: [ "${LTI_PORT}:443" ]
-
-networks:
-  te-canvas:
