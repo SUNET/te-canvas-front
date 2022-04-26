@@ -1,4 +1,4 @@
 window.injectedEnv = {
-    BACKEND_URL: "$LTI_URL",
+    BACKEND_URL: "$BACKEND_URL",
     NO_LTI: "$NO_LTI",
 };
