@@ -24,7 +24,7 @@ export function getLtik() {
 
 export function urlParams(baseUrl, path, params) {
     let url = new URL(path, baseUrl);
-    if (!window.injectedEnv.NO_LTI) params.ltik = getLtik();
+    if (window.injectedEnv.NO_LTI !== "1") params.ltik = getLtik();
     url.search = new URLSearchParams(params);
     return url;
 }
