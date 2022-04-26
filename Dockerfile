@@ -8,11 +8,11 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-COPY inject_template.js inject.bash start.bash ./
+COPY inject_template.js inject.bash ./
 RUN apt update && apt install -y gettext
 
 COPY src ./src/
 COPY .parcelrc ./
 RUN npm run build
 
-CMD ./start.bash
+CMD npm run start
