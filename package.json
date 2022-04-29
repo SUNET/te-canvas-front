@@ -3,8 +3,8 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "start": "./inject.bash && node src/lti.js",
-        "build": "BACKEND_URL=$LTI_URL parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
+        "start": "BACKEND_URL=$LTI_URL ./inject.bash && node src/lti.js",
+        "build": "parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
         "start-parcel": "BACKEND_URL=$API_URL NO_LTI=1 ./inject.bash && parcel --port 8000 src/index.html"
     },
     "browserslist": "defaults",
