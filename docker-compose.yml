@@ -1,12 +1,16 @@
 services:
 
   mongo:
+    logging:
+      driver: local
     image: mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: $MONGO_USERNAME
       MONGO_INITDB_ROOT_PASSWORD: $MONGO_PASSWORD
 
   node:
+    logging:
+      driver: local
     image: docker.sunet.se/te-canvas-front
     depends_on: [ mongo ]
     environment:
@@ -23,6 +27,8 @@ services:
       - AUTHORIZED_ROLES
 
   nginx:
+    logging:
+      driver: local
     image: nginx
     depends_on: [ node ]
     volumes:
