@@ -102,16 +102,16 @@ ssl.crt
 ssl.key
 ```
 
-Compile React app and start Express server, MongoDB, and Nginx:
+Start Express server, MongoDB, and Nginx:
 
 ```
 docker-compose up
 ```
 
-To start Docker in production mode, without exposed ports and using prebuilt images:
+To start in "dev mode", with locally built Docker images and exposed ports (*not safe in production*):
 
 ```
-docker-compose -f docker-compose.yml up
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
 ## LTI architecture
