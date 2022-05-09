@@ -45,7 +45,7 @@ ssl.crt
 ssl.key
 ```
 
-Start nginx:
+Start Nginx:
 
 ```
 nginx -p . -c nginx.conf
@@ -128,7 +128,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 │         │                                      ▼
 │         │                            ┌───────────────────────┐             ┌───────────────────────┐
 │         │                            │ LTI server            │             │ API server (Flask)    │
-│         │                            │ (Express, nginx)      │             │                       │
+│         │                            │ (Express, Nginx)      │             │                       │
 │         │                            │                       │             │ No own auth, trust    │
 │         │                            │                       │             │ all requests          │
 │         │                            │                       │             │ implicitly            │
