@@ -1,6 +1,6 @@
 # te-canvas-front
 
-## Quick start (standalone)
+## Quick start (standalone, dev mode)
 
 Export the following env vars:
 
@@ -20,7 +20,7 @@ Start Parcel dev server:
 npm run start-parcel
 ```
 
-## Quick start (LTI)
+## Quick start (LTI, dev mode)
 
 Export the following env vars:
 
@@ -54,7 +54,7 @@ nginx -p . -c nginx.conf
 Start MongoDB:
 
 ```
-docker-compose up -d mongo
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d mongo
 ```
 
 Get dependencies:
