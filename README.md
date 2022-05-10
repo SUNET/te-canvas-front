@@ -182,4 +182,4 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Multiple platform setup
 
-Each platform has its own API server. In front of this they all share one single LTI server. The JWTs which accompany browser requests contain information about their source platform. The LTI server uses this information to determine which API server to forward each incoming request to.
+Each platform has its own API server. In front of this they all share one single LTI server. The JWTs which accompany browser requests contain information about their source platform. The LTI server uses this information to determine which API server to forward incoming requests to.
