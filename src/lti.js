@@ -51,7 +51,7 @@ function checkRoles(authorized, given) {
 // UI than for security. The important check is before passing requests to the
 // API, set up in the block below this.
 lti.onConnect((token, req, res, next) => {
-    extras = platformExtras.get(res.locals.token.platformId);
+    let extras = platformExtras.get(res.locals.token.platformId);
 
     if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
         res.set("Content-Type", "text/plain");
@@ -72,7 +72,7 @@ lti.onConnect((token, req, res, next) => {
 // Forward API requests to Python backend. Only the Express server will have
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function(req, res, next) {
-    extras = platformExtras.get(res.locals.token.platformId);
+    let extras = platformExtras.get(res.locals.token.platformId);
 
     // Check that the user has an authorized role
     if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
