@@ -1,3 +1,4 @@
+let fs = require("fs");
 let path = require("path");
 let http = require("http");
 
@@ -112,7 +113,7 @@ lti.app.all("/api/*", function (req, res, next) {
 async function setup() {
     await lti.deploy({ port: 8000 });
 
-    let platforms = JSON.parse(fs.readFileSync("../platforms.json"));
+    let platforms = JSON.parse(fs.readFileSync("platforms.json"));
     for (let platform of platforms) {
         let pid = await lti
             .registerPlatform({
