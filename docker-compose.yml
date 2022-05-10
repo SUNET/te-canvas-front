@@ -15,16 +15,14 @@ services:
     depends_on: [ mongo ]
     environment:
       - LTI_URL
-      - API_URL=http://api:5000
 
       - MONGO_URL=mongodb://mongo:27017
       - MONGO_USERNAME
       - MONGO_PASSWORD
 
-      - PLATFORM_NAME
-      - CLIENT_ID
       - ENCRYPTION_KEY
-      - AUTHORIZED_ROLES
+    volumes:
+      - ./platforms.json:/usr/src/app/platforms.json
 
   nginx:
     logging:
