@@ -12,8 +12,6 @@ const CANVAS_TOKEN_ENDPOINT =
 const CANVAS_JWK_ENDPOINT =
     "https://canvas.instructure.com/api/lti/security/jwks";
 
-const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
-
 // Map holding platform information we store in a JSON file, keyed on platform
 // ID created (randomly) by ltijs on platform registration.
 let platformExtras = new Map();
@@ -40,9 +38,9 @@ lti.setup(
     }
 );
 
-function checkRoles(roles) {
-    for (let r of AUTHORIZED_ROLES) {
-        if (roles.includes(r)) {
+function checkRoles(authorized, given) {
+    for (let r of authorized) {
+        if (given.includes(r)) {
             return true;
         }
     }
@@ -53,37 +51,34 @@ function checkRoles(roles) {
 // UI than for security. The important check is before passing requests to the
 // API, set up in the block below this.
 lti.onConnect((token, req, res, next) => {
-    if (!checkRoles(res.locals.context.roles)) {
+    extras = platformExtras.get(res.locals.token.platformId);
+
+    if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
         res.set("Content-Type", "text/plain");
         res.status(401).send(
             "Unauthorized\n" +
-                "Wanted: " +
-                AUTHORIZED_ROLES +
-                "\n" +
-                "Received: " +
-                res.locals.context.roles
+            "Wanted: " +
+            extras.authorized_roles +
+            "\n" +
+            "Received: " +
+            res.locals.context.roles
         );
         return;
     }
+
     return lti.redirect(res, "/index.html");
 });
 
 // Forward API requests to Python backend. Only the Express server will have
 // access to the backend, so we can't just return a 301 redirect.
-lti.app.all("/api/*", function (req, res, next) {
-    // Check that the user has an authorized role
-    // TODO: Platform-specific
-    if (!checkRoles(res.locals.context.roles)) {
-        res.sendStatus(401);
-        return;
-    }
-
-    // Check that we have registered extras (e.g. api URL) for this platform
-    if (!platformExtras.has(res.locals.token.platformId)) {
-        res.sendStatus(401);
-        return;
-    }
+lti.app.all("/api/*", function(req, res, next) {
     extras = platformExtras.get(res.locals.token.platformId);
+
+    // Check that the user has an authorized role
+    if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
+        res.sendStatus(401);
+        return;
+    }
 
     // Strip ltik (there is full trust between Express and Python backend)
     delete req.query.ltik;
