@@ -52,6 +52,10 @@ function checkRoles(authorized, given) {
 // API, set up in the block below this.
 lti.onConnect((token, req, res, next) => {
     let extras = platformExtras.get(res.locals.token.platformId);
+    if (extras === undefined) {
+        res.sendStatus(500);
+        return;
+    }
 
     if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
         res.set("Content-Type", "text/plain");
@@ -73,6 +77,10 @@ lti.onConnect((token, req, res, next) => {
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function(req, res, next) {
     let extras = platformExtras.get(res.locals.token.platformId);
+    if (extras === undefined) {
+        res.sendStatus(500);
+        return;
+    }
 
     // Check that the user has an authorized role
     if (!checkRoles(extras.authorized_roles, res.locals.context.roles)) {
