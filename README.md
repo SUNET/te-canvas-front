@@ -32,10 +32,23 @@ MONGO_URL
 MONGO_USERNAME
 MONGO_PASSWORD
 
-PLATFORM_NAME
-CLIENT_ID
 ENCRYPTION_KEY
-AUTHORIZED_ROLES
+```
+
+Create a file `platforms.json` at repo root containing information about each platform (Canvas instance) in the following format:
+
+```
+[
+   {
+      "api_url" : "http://127.0.0.1:6000",
+      "authorized_roles" : [
+         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
+         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor"
+      ],
+      "client_id" : "1000001",
+      "name" : "My Canvas Instance"
+   }
+]
 ```
 
 Create (and trust) the following self-signed cert:
@@ -87,12 +100,25 @@ MONGO_URL*
 MONGO_USERNAME
 MONGO_PASSWORD
 
-PLATFORM_NAME
-CLIENT_ID
 ENCRYPTION_KEY
-AUTHORIZED_ROLES
 
 * Predefined in docker-compose file
+```
+
+Create a file `platforms.json` at repo root containing information about each platform (Canvas instance) in the following format:
+
+```
+[
+   {
+      "api_url" : "http://127.0.0.1:6000",
+      "authorized_roles" : [
+         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
+         "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor"
+      ],
+      "client_id" : "1000001",
+      "name" : "My Canvas Instance"
+   }
+]
 ```
 
 Create (and trust) the following self-signed cert:
