@@ -1,5 +1,7 @@
-let path = require("path");
+let fs = require("fs");
 let http = require("http");
+let path = require("path");
+let process = require("process");
 
 let lti = require("ltijs").Provider;
 
@@ -12,8 +14,6 @@ const CANVAS_JWK_ENDPOINT =
     "https://canvas.instructure.com/api/lti/security/jwks";
 
 const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
-
-let apiUrl = new Map();
 
 lti.setup(
     process.env.ENCRYPTION_KEY, // Key used to sign cookies and tokens
@@ -54,11 +54,11 @@ lti.onConnect((token, req, res, next) => {
         res.set("Content-Type", "text/plain");
         res.status(401).send(
             "Unauthorized\n" +
-                "Wanted: " +
-                AUTHORIZED_ROLES +
-                "\n" +
-                "Received: " +
-                res.locals.context.roles
+            "Wanted: " +
+            AUTHORIZED_ROLES +
+            "\n" +
+            "Received: " +
+            res.locals.context.roles
         );
         return;
     }
@@ -67,7 +67,7 @@ lti.onConnect((token, req, res, next) => {
 
 // Forward API requests to Python backend. Only the Express server will have
 // access to the backend, so we can't just return a 301 redirect.
-lti.app.all("/api/*", function (req, res, next) {
+lti.app.all("/api/*", async function(req, res, next) {
     // Check that the user has an authorized role
     // TODO: Platform-specific
     if (!checkRoles(res.locals.context.roles)) {
@@ -75,8 +75,11 @@ lti.app.all("/api/*", function (req, res, next) {
         return;
     }
 
+    let platform = await lti.getPlatformById(res.locals.token.platformId);
+
+
     // Check that we have registered an api URL for this platform ID
-    if (!apiUrl.has(res.locals.token.platformId)) {
+    if (platform.apiUrl === undefined) {
         res.sendStatus(401);
         return;
     }
@@ -91,7 +94,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
     http.request(
-        apiUrl.get(res.locals.token.platformId),
+        platform.apiUrl,
         {
             path: req.path + "?" + params.toString(),
             method: req.method
@@ -109,9 +112,9 @@ lti.app.all("/api/*", function (req, res, next) {
 async function setup() {
     await lti.deploy({ port: 8000 });
 
-    let platforms = JSON.parse(fs.readFileSync("../platforms.json"));
+    let platforms = JSON.parse(fs.readFileSync("platforms.json"));
     for (let platform of platforms) {
-        let pid = await lti
+        let p = await lti
             .registerPlatform({
                 name: platform.name,
                 clientId: platform.client_id,
@@ -123,11 +126,12 @@ async function setup() {
                     key: CANVAS_JWK_ENDPOINT
                 }
             })
-            .then(p => p.platformId());
-
-        // TODO: Add api_url to Platform instance directly instead
-        apiUrl.set(pid, platform.api_url);
+        if ("apiUrl" in p) {
+            console.error("Fatal: Attempted to overrwrite existing property on Platform");
+            process.exit(1);
+        }
+        p.apiUrl = platform.api_url;
     }
 }
 
-setup().then(() => console.log(apiUrl));
+setup();
