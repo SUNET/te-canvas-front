@@ -13,7 +13,9 @@ const CANVAS_JWK_ENDPOINT =
 
 const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
 
-let apiUrl = new Map();
+// Map holding platform information we store in a JSON file, keyed on platform
+// ID created (randomly) by ltijs on platform registration.
+let platformExtras = new Map();
 
 lti.setup(
     process.env.ENCRYPTION_KEY, // Key used to sign cookies and tokens
@@ -75,11 +77,12 @@ lti.app.all("/api/*", function (req, res, next) {
         return;
     }
 
-    // Check that we have registered an api URL for this platform ID
-    if (!apiUrl.has(res.locals.token.platformId)) {
+    // Check that we have registered extras (e.g. api URL) for this platform
+    if (!platformExtras.has(res.locals.token.platformId)) {
         res.sendStatus(401);
         return;
     }
+    extras = platformExtras.get(res.locals.token.platformId);
 
     // Strip ltik (there is full trust between Express and Python backend)
     delete req.query.ltik;
@@ -91,7 +94,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
     http.request(
-        apiUrl.get(res.locals.token.platformId),
+        extras.api_url,
         {
             path: req.path + "?" + params.toString(),
             method: req.method
@@ -125,9 +128,8 @@ async function setup() {
             })
             .then(p => p.platformId());
 
-        // TODO: Add api_url to Platform instance directly instead
-        apiUrl.set(pid, platform.api_url);
+        platformExtras.set(pid, platform);
     }
 }
 
-setup().then(() => console.log(apiUrl));
+setup().then(() => console.log(platformExtras));
