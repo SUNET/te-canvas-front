@@ -26,7 +26,6 @@ Export the following env vars:
 
 ```
 LTI_URL
-API_URL
 
 MONGO_URL
 MONGO_USERNAME
