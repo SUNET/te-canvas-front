@@ -13,6 +13,8 @@ const CANVAS_JWK_ENDPOINT =
 
 const AUTHORIZED_ROLES = process.env.AUTHORIZED_ROLES.split(" ");
 
+let apiUrl = new Map();
+
 lti.setup(
     process.env.ENCRYPTION_KEY, // Key used to sign cookies and tokens
     {
@@ -67,7 +69,14 @@ lti.onConnect((token, req, res, next) => {
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function (req, res, next) {
     // Check that the user has an authorized role
+    // TODO: Platform-specific
     if (!checkRoles(res.locals.context.roles)) {
+        res.sendStatus(401);
+        return;
+    }
+
+    // Check that we have registered an api URL for this platform ID
+    if (!apiUrl.has(res.locals.token.platformId)) {
         res.sendStatus(401);
         return;
     }
@@ -82,7 +91,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
     http.request(
-        process.env.API_URL,
+        apiUrl.get(res.locals.token.platformId),
         {
             path: req.path + "?" + params.toString(),
             method: req.method
@@ -100,17 +109,25 @@ lti.app.all("/api/*", function (req, res, next) {
 async function setup() {
     await lti.deploy({ port: 8000 });
 
-    await lti.registerPlatform({
-        name: process.env.PLATFORM_NAME,
-        clientId: process.env.CLIENT_ID,
-        url: CANVAS_URL,
-        authenticationEndpoint: CANVAS_AUTH_ENDPOINT,
-        accesstokenEndpoint: CANVAS_TOKEN_ENDPOINT,
-        authConfig: {
-            method: "JWK_SET",
-            key: CANVAS_JWK_ENDPOINT
-        }
-    });
+    let platforms = JSON.parse(fs.readFileSync("../platforms.json"));
+    for (let platform of platforms) {
+        let pid = await lti
+            .registerPlatform({
+                name: platform.name,
+                clientId: platform.client_id,
+                url: CANVAS_URL,
+                authenticationEndpoint: CANVAS_AUTH_ENDPOINT,
+                accesstokenEndpoint: CANVAS_TOKEN_ENDPOINT,
+                authConfig: {
+                    method: "JWK_SET",
+                    key: CANVAS_JWK_ENDPOINT
+                }
+            })
+            .then(p => p.platformId());
+
+        // TODO: Add api_url to Platform instance directly instead
+        apiUrl.set(pid, platform.api_url);
+    }
 }
 
-setup();
+setup().then(() => console.log(apiUrl));
