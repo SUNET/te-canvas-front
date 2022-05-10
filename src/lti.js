@@ -61,11 +61,11 @@ lti.onConnect((token, req, res, next) => {
         res.set("Content-Type", "text/plain");
         res.status(401).send(
             "Unauthorized\n" +
-            "Wanted: " +
-            extras.authorized_roles +
-            "\n" +
-            "Received: " +
-            res.locals.context.roles
+                "Wanted: " +
+                extras.authorized_roles +
+                "\n" +
+                "Received: " +
+                res.locals.context.roles
         );
         return;
     }
@@ -75,7 +75,7 @@ lti.onConnect((token, req, res, next) => {
 
 // Forward API requests to Python backend. Only the Express server will have
 // access to the backend, so we can't just return a 301 redirect.
-lti.app.all("/api/*", function(req, res, next) {
+lti.app.all("/api/*", function (req, res, next) {
     let extras = platformExtras.get(res.locals.token.platformId);
     if (extras === undefined) {
         res.sendStatus(500);
