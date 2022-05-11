@@ -23,6 +23,7 @@ services:
       - ENCRYPTION_KEY
     volumes:
       - ./platforms.json:/usr/src/app/platforms.json
+    networks: [ te-canvas ]
 
   nginx:
     logging:
@@ -35,3 +36,7 @@ services:
       - ./ssl.key:/etc/nginx/ssl.key
       - ./lti.json:/www/data/lti.json
     ports: [ "${LTI_PORT}:443" ]
+
+networks:
+  te-canvas:
+    external: true
