@@ -23,7 +23,7 @@ services:
       - ENCRYPTION_KEY
     volumes:
       - ./platforms.json:/usr/src/app/platforms.json
-    networks: [ te-canvas ]
+    networks: [ te-canvas, default ]
 
   nginx:
     logging:
