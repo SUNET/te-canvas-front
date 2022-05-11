@@ -11,7 +11,7 @@ services:
   node:
     logging:
       driver: local
-    image: docker.sunet.se/te-canvas-front
+    image: docker.sunet.se/te-canvas-front:${TAG_NODE-latest}
     depends_on: [ mongo ]
     environment:
       - LTI_URL

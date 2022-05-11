@@ -101,6 +101,8 @@ MONGO_PASSWORD
 
 ENCRYPTION_KEY
 
+TAG_NODE*
+
 * Predefined in docker-compose file
 ```
 
