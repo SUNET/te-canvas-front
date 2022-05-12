@@ -4,14 +4,6 @@ let http = require("http");
 
 let lti = require("ltijs").Provider;
 
-const CANVAS_URL = "https://canvas.instructure.com";
-const CANVAS_AUTH_ENDPOINT =
-    "https://canvas.instructure.com/api/lti/authorize_redirect";
-const CANVAS_TOKEN_ENDPOINT =
-    "https://canvas.instructure.com/login/oauth2/token";
-const CANVAS_JWK_ENDPOINT =
-    "https://canvas.instructure.com/api/lti/security/jwks";
-
 // Map holding platform information we store in a JSON file, keyed on platform
 // ID created (randomly) by ltijs on platform registration.
 let platformExtras = new Map();
@@ -122,12 +114,12 @@ async function setup() {
             .registerPlatform({
                 name: platform.name,
                 clientId: platform.client_id,
-                url: CANVAS_URL,
-                authenticationEndpoint: CANVAS_AUTH_ENDPOINT,
-                accesstokenEndpoint: CANVAS_TOKEN_ENDPOINT,
+                url: platform.canvas_url,
+                authenticationEndpoint: platform.canvas_auth,
+                accesstokenEndpoint: platform.canvas_token,
                 authConfig: {
                     method: "JWK_SET",
-                    key: CANVAS_JWK_ENDPOINT
+                    key: platform.canvas_jwk
                 }
             })
             .then(p => p.platformId());
