@@ -44,6 +44,10 @@ Create a file `platforms.json` at repo root containing information about each pl
          "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator",
          "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Instructor"
       ],
+      "canvas_auth" : "https://canvas.instructure.com/api/lti/authorize_redirect",
+      "canvas_jwk" : "https://canvas.instructure.com/api/lti/security/jwks",
+      "canvas_token" : "https://canvas.instructure.com/login/oauth2/token",
+      "canvas_url" : "https://canvas.instructure.com",
       "client_id" : "1000001",
       "name" : "My Canvas Instance"
    }
