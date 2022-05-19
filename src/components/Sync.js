@@ -11,7 +11,7 @@ class Sync extends React.Component {
         super(props);
         this.state = {
             searchObjects: {},
-            feedbackMessage: null,
+            feedbackMessage: null
         };
 
         this.refresh = this.refresh.bind(this);
