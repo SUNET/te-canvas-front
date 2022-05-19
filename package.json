@@ -21,8 +21,7 @@
         "parcel-resolver-ignore": "2.0.0",
         "prop-types": "^15.7.2",
         "react": "^17.0.2",
-        "react-dom": "^17.0.2",
-        "react-router-dom": "^6.2.1"
+        "react-dom": "^17.0.2"
     },
     "dependenciesComments": {
         "parcel-resolver-ignore": "Very small package so its version is pinned, do not update without reading source code"
