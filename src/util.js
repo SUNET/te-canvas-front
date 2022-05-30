@@ -22,6 +22,7 @@ export function getLtik() {
     return ltik;
 }
 
+// Create an URL from baseUrl and path, appending LTI JWT and params as query string
 export function urlParams(baseUrl, path, params) {
     let url = new URL(path, baseUrl);
     if (window.injectedEnv.NO_LTI !== "1") params.ltik = getLtik();
