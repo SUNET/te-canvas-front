@@ -3,6 +3,8 @@ import React from "react";
 import { Heading, InstUISettingsProvider, Tabs, canvas } from "@instructure/ui";
 
 import "../style.css";
+
+import { urlParams } from "../util";
 import Config from "./Config";
 import Feedback from "./Feedback";
 import Sync from "./Sync";
@@ -72,7 +74,7 @@ class TemplateErrorFeedback extends React.Component {
     }
 
     refresh() {
-        fetch(window.injectedEnv.BACKEND_URL + "/api/config/ok")
+        fetch(urlParams(window.injectedEnv.BACKEND_URL, "/api/config/ok", {}))
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
