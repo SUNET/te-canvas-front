@@ -1,10 +1,11 @@
 import React from "react";
 
-import { Alert, Button, SimpleSelect, View } from "@instructure/ui";
+import { Button, SimpleSelect, View } from "@instructure/ui";
 import { IconPlusLine, IconTrashLine } from "@instructure/ui-icons";
 
 import { MyContext, parseResponse, urlParams } from "../util";
 import AsyncSelect from "./AsyncSelect";
+import Feedback from "./Feedback";
 
 class Sync extends React.Component {
     constructor(props) {
@@ -117,16 +118,6 @@ class Sync extends React.Component {
                 </div>
             </MyContext.Provider>
         );
-    }
-}
-
-class Feedback extends React.Component {
-    render() {
-        return this.props.message ? (
-            <Alert variant="error" margin="small">
-                {this.props.message}
-            </Alert>
-        ) : null;
     }
 }
 
