@@ -76,7 +76,7 @@ class TemplateErrorFeedback extends React.Component {
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
-                        `Unexpected HTTP response from /config/ok: ${resp.status}`
+                        `Unexpected HTTP response from /api/config/ok: ${resp.status}`
                     );
                 return resp.text();
             })
@@ -86,7 +86,7 @@ class TemplateErrorFeedback extends React.Component {
                     this.setState({ templateError: true });
                 else
                     throw new Error(
-                        `Unexpected text response from /config/ok: ${text}`
+                        `Unexpected text response from /api/config/ok: ${text}`
                     );
             })
             .catch(e => console.error(e));
