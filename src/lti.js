@@ -89,7 +89,7 @@ lti.app.all("/api/*", function (req, res, next) {
         .filter(([_, value]) => value === "LTI_CUSTOM_PROPERTY")
         .forEach(([key, _]) => params.set(key, res.locals.context.custom[key]));
 
-    http.request(
+    req = http.request(
         extras.api_url,
         {
             path: req.path + "?" + params.toString(),
@@ -102,7 +102,9 @@ lti.app.all("/api/*", function (req, res, next) {
                 res.status(backend_res.statusCode).send(data);
             });
         }
-    ).end();
+    )
+    req.on("error", e => console.error(`Error from API server: ${e}`));
+    req.end();
 });
 
 async function setup() {
