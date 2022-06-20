@@ -82,6 +82,7 @@ lti.app.all("/api/*", function (req, res, next) {
 
     // Strip ltik (there is full trust between Express and Python backend)
     delete req.query.ltik;
+
     let params = new URLSearchParams(req.query);
 
     // Substitute specified parameters with LTI custom properties
