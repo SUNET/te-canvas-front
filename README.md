@@ -152,41 +152,55 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 ## LTI architecture
 
 ```
-┌─────────┐                                  ┌────────┐
-│ Browser ├─────────────────────────────────►│ Canvas │
-│         │                                  └───┬────┘
-│         │                                      │
-│         │                                      │
-│         │                                      │ LTI handshake
-│         │                                      │
-│         │                                      │
-│         │                                      ▼
-│         │                            ┌───────────────────────┐             ┌───────────────────────┐
-│         │                            │ LTI server            │             │ API server (Flask)    │
-│         │                            │ (Express, Nginx)      │             │                       │
-│         │                            │                       │             │ No own auth, trust    │
-│         │                            │                       │             │ all requests          │
-│         │                            │                       │             │ implicitly            │
-│         │                            │                       │             │                       │
-│         │                            │                       │             │ So, only reachable    │
-│         │      React app + JWT       │                       │             │ from LTI server       │
-│         │◄───────────────────────────┤                       │             │                       │
-│         │                            │                       │             │                       │
-│         │                            │                       │             │                       │
-│         │                            │                       │             │                       │
-│         │                            │                       │             │                       │
-│         │   Fetch request with JWT   │                       │             │                       │
-│         │   as auth header           │                       │             │                       │
-│         ├───────────────────────────►│ As reverse proxy with ├────────────►│ Response prepared     │
-│         │                            │ "LTI termination"     │             │ using info from JWT   │
-│         │                            │ (JWT verification     │             │           │           │
-│         │                            │ etc)                  │             │           │           │
-│         │                            │                       │             │           │           │
-│         │                            │                       │             │           │           │
-│         │◄───────────────────────────┤◄──────────────────────│◄────────────┤◄──────────┘           │
-│         │                            │                       │             │                       │
-│         │                            │                       │             │                       │
-└─────────┘                            └───────────────────────┘             └───────────────────────┘
+┌─────────┐                              ┌────────┐
+│ Browser ├─────────────────────────────►│ Canvas │
+│         │                              └───┬────┘
+│         │                                  │
+│         │                                  │
+│         │                                  │ LTI handshake
+│         │                                  │
+│         │                                  │
+│         │                                  ▼
+│         │                        ┌───────────────────────┐                   ┌───────────────────────┐
+│         │                        │ LTI server            │                   │ API server (Flask)    │
+│         │                        │ (Express, Nginx)      │                   │                       │
+│         │                        │                       │                   │ No own auth, trust    │
+│         │                        │                       │                   │ all requests          │
+│         │                        │                       │                   │ implicitly            │
+│         │                        │                       │                   │                       │
+│         │                        │                       │                   │ So, only reachable    │
+│         │    React app + JWT     │                       │                   │ from LTI server       │
+│         │◄───────────────────────┤                       │                   │                       │
+│         │                        │                       │                   │                       │
+│         │                        │                       │                   │                       │
+│         │                        │                       │ Deciding which    │                       │
+│         │                        │                       │ back end to       │                       │
+│         │ Fetch request with JWT │                       │ forward to using  │                       │
+│         │ as auth header         │                       │ JWT               │                       │
+│         ├───────────────────────►│ As reverse proxy with ├──────────────────►│                       │
+│         │                        │ "LTI termination"     │                   │                       │
+│         │                        │ (JWT verification     │                   │                       │
+│         │                        │ etc)                  │                   │                       │
+│         │                        │                       │                   │                       │
+│         │                        │                       │                   │                       │
+│         │◄───────────────────────┤◄──────────────────────│◄──────────────────┤                       │
+│         │                        │                       │                   │                       │
+│         │                        │                       │                   │                       │
+└─────────┘                        └───────────────────────┘                   └───────────────────────┘
+
+                                                                               ┌───────────────────────┐
+                                                                               │ API server 2          │
+                                                                               │                       │
+                                                                               │                       │
+                                                                               └───────────────────────┘
+                                                                                          ·
+                                                                                          ·
+                                                                                          ·
+                                                                               ┌───────────────────────┐
+                                                                               │ API server <n>        │
+                                                                               │                       │
+                                                                               │                       │
+                                                                               └───────────────────────┘
 ```
 
 ## Multiple platform setup
