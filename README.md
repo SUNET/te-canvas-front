@@ -22,9 +22,9 @@ npm run start-parcel
 
 ## Run as an LTI 1.3 server
 
-In this scheme, the front end will consist of two parts. One is the client-side React app, and the other is a server which handles authentication and forwards API requests to a set of back ends. This is different from the standalone mode, where API requests are made to a single back end server directly. For more detail on this setup, see [te-canvas/doc.md](https://github.com/SUNET/te-canvas/blob/main/doc.md).
+In this scheme, the front end will consist of two parts. One is the client-side React app, and the other is an LTI server which handles authentication and forwards API requests to a set of back ends. This is different from the standalone mode, where API requests are made to a single back end server directly. For more detail on this setup, see [te-canvas/doc.md](https://github.com/SUNET/te-canvas/blob/main/doc.md).
 
-Besides the environment variabled listed under [Configuration](#configuration), you also need the following files at repo root:
+Besides the environment variables listed under [Configuration](#configuration), you also need the following files at repo root:
 
 - [platforms.json](#platforms.json)
 - ssl.crt
@@ -78,19 +78,19 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 ## Configuration
 
-| Environment variable | Description                                                | Predefined in docker-compose file? |
-| -                    | -                                                          | -                                  |
+| Environment variable | Description                                               | Predefined in docker-compose file? |
+| -                    | -                                                         | -                                  |
 | `API_URL`            | Location of back end server. Only used for standalone mode, LTI mode uses several back ends configured via [platforms.json](#platformsjson) | |
 | `LTI_URL`            | Location of LTI server. Used in compose file for LTI server and correspondingly for requests from React app. | |
-| `LTI_PORT`           | Port of LTI server. Used same as `LTI_URL`.                |                                    |
-|                      |                                                            |                                    |
-| `MONGO_URL`          | Location of MongoDB, used by ltijs library.                | ✅                                 |
-| `MONGO_USERNAME`     | MongoDB username.                                          |                                    |
-| `MONGO_PASSWORD`     | MongoDB password.                                          |                                    |
-|                      |                                                            |                                    |
-| `ENCRYPTION_KEY`     | An random string used by ltijs to sign cookies and tokens. |                                    |
-|                      |                                                            |                                    |
-| `TAG_NODE`           | Tag to use for `docker.sunet.se/te-canvas-front`.          | ✅                                 |
+| `LTI_PORT`           | Port of LTI server. Used same as `LTI_URL`.               |                                    |
+|                      |                                                           |                                    |
+| `MONGO_URL`          | Location of MongoDB, used by ltijs library.               | ✅                                 |
+| `MONGO_USERNAME`     | MongoDB username.                                         |                                    |
+| `MONGO_PASSWORD`     | MongoDB password.                                         |                                    |
+|                      |                                                           |                                    |
+| `ENCRYPTION_KEY`     | A random string used by ltijs to sign cookies and tokens. |                                    |
+|                      |                                                           |                                    |
+| `TAG_NODE`           | Tag to use for `docker.sunet.se/te-canvas-front`.         | ✅                                 |
 
 ## `platforms.json`
 
@@ -114,7 +114,7 @@ This file contains information about each Canvas instance (platform). This is no
 ]
 ```
 
-- `api_url`: URL to back end server, where the front end server will forward API requests for this particular platform.
+- `api_url`: URL to back end server, where the LTI server will forward API requests for this particular platform.
 - `authorized_roles`: Any user which has one of these roles (defined in LTI standars) is allowed access to the back end. If the user does not have an authorized role, the server will reply with an error message including the current user's actual roles (also printed in the server logs). This can be used to find out which roles a given user has, i.e. set `authorized_roles` to `[]`.
 
 Rest of the keys are passed to ltijs as mentioned above. The Canvas URLs will be the same for every instance in Canvas's production environment (also exists: beta and test).
