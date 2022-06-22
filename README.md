@@ -80,7 +80,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 | Environment variable | Description                                               | Predefined in docker-compose file? |
 | -                    | -                                                         | -                                  |
-| `API_URL`            | Location of API server, used in fetch requests from the React app. In non-LTI mode this is a single back end server. In LTI mode this should point to the LTI server, which acts as reverse proxy for multiple back ends. | |
+| `API_URL`            | Location of API server, used in fetch requests from the React app. In standalone mode this is a single back end server. In LTI mode this should point to the LTI server, which acts as reverse proxy for multiple back ends. | |
 |                      |                                                           |                                    |
 | `LTI_URL`            | LTI server location (same as `API_URL`).                  |                                    |
 | `LTI_PORT`           | LTI server port.                                          |                                    |
