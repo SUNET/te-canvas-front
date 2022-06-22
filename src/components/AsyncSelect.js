@@ -40,7 +40,7 @@ class AsyncSelect extends React.Component {
         parseResponse(
             fetch(
                 urlParams(
-                    window.injectedEnv.BACKEND_URL,
+                    window.injectedEnv.API_URL,
                     "/api/timeedit/objects",
                     {
                         type: this.props.type,

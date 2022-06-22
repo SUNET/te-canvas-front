@@ -25,7 +25,7 @@ class Config extends React.Component {
     refresh() {
         for (let k of ["title", "location", "description"]) {
             fetch(
-                urlParams(window.injectedEnv.BACKEND_URL, "/api/config", {
+                urlParams(window.injectedEnv.API_URL, "/api/config", {
                     key: k
                 })
             )
@@ -45,7 +45,7 @@ class Config extends React.Component {
     submit() {
         for (let k of ["title", "location", "description"]) {
             fetch(
-                urlParams(window.injectedEnv.BACKEND_URL, "/api/config", {
+                urlParams(window.injectedEnv.API_URL, "/api/config", {
                     key: k,
                     value: this.state[k]
                 }),

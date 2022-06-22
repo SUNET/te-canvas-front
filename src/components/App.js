@@ -74,7 +74,7 @@ class TemplateErrorFeedback extends React.Component {
     }
 
     refresh() {
-        fetch(urlParams(window.injectedEnv.BACKEND_URL, "/api/config/ok", {}))
+        fetch(urlParams(window.injectedEnv.API_URL, "/api/config/ok", {}))
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
