@@ -72,7 +72,7 @@ class Sync extends React.Component {
                             })
                             .then(data => ({
                                 extid: data.extid,
-                                type: "TODO", // TODO: Get type name from c.te_type extid
+                                type: c.te_type, // TODO: Convert this to a type name using /api/timeedit/types
                                 id: data["general.id"],
                                 title: data["general.title"]
                             }))
@@ -182,7 +182,7 @@ class SearchObject extends React.Component {
                         alignItems: "center"
                     }}
                 >
-                    {/* <div>{this.props.type}</div> */}
+                    <div>{this.props.type}</div>
                     <div>{this.props.title}</div>
                     <div>{this.props.id}</div>
                     <div>{this.props.extid}</div>
