@@ -30,7 +30,7 @@ Besides the environment variables listed under [Configuration](#configuration), 
 - ssl.crt
 - ssl.key
 
-### Without Docker
+### Without Docker (not for production)
 
 Start Nginx:
 
@@ -41,7 +41,7 @@ nginx -p . -c nginx.conf
 Start MongoDB:
 
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d mongo
+docker-compose up -d mongo
 ```
 
 Get dependencies:
@@ -64,16 +64,20 @@ npm run start
 
 ### With Docker
 
+> The main Docker compose file comes with an override file `docker-compose.dev.yml`, which exposes ports for all containers and builds images locally. This is convenient to use during development but not safe in production. **Note that `docker-compose.override.yml` is enabled by default** and simply doing `docker-compose up` in this repo will start in **unsafe dev mode**.
+>
+> To use *only* the production-ready `docker-compose.yml`, you can do `docker-compose -f docker-compose.yml up`. But since we use Puppet for all this anyway, `docker-compose.override.yml` should never be near our production environment.
+
 Start LTI server, MongoDB, and Nginx:
 
 ```
-docker-compose up
+docker-compose -f docker-compose.yml up
 ```
 
 Start in dev mode, with exposed ports (**not safe in production**) and using locally built images:
 
 ```
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker-compose up
 ```
 
 ## Configuration
