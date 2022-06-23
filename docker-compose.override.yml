@@ -1,3 +1,4 @@
+# NOTE: Not for production
 services:
   mongo:
     ports: [ 127.0.0.1:27017:27017 ]
