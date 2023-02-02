@@ -134,4 +134,19 @@ The key `extensions.settings.placements.visibility` decides which type of Canvas
 
 The key `custom_fields` specifies a set of Canvas variables to add to the JWT passed with each request. In our case we want to get the course ID.
 
-The way we use this to pass data to the back end is implemented in a general way in `src/lti.js` (the LTI server's start point). If the front end receives a request with query parameter `x=LTI_CUSTOM_PROPETY`, we look up key `x` in the JWT Canvas gave us and replace `LTI_CUSTOM_PROPERTY` with the real value, before forwarding the request to the back end.
+The way we use this to pass data to the back end is implemented in a general way in `src/lti.js` (the LTI server's start point). If the front end receives a request with query parameter `x=LTI_CUSTOM_PROPERTY`, we look up key `x` in the JWT Canvas gave us and replace `LTI_CUSTOM_PROPERTY` with the real value, before forwarding the request to the back end.
+
+## Deploy app in Canvas
+Create a developer key of type LTI in Canvas.
+You do this in Admin > Developer Keys
+![](img/canvas_developer_key.png)
+
+Paste `te-canvas.sunet.se/lti.json` when creating the key.
+![](img/canvas_create_developer_key.png)
+
+Then go to Admin > Settings > Apps > View app configurations.
+Create the app using the client id from the developer key you just created.
+![](img/canvas_create_app.png)
+
+Now the frontend can be reached from course view in Canvas.
+
