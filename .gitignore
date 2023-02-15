@@ -5,3 +5,4 @@ dist
 ssl.crt
 ssl.key
 platforms.json
+.env
