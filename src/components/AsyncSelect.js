@@ -53,18 +53,29 @@ class AsyncSelect extends React.Component {
             ),
             json => {
                 this.setState({
-                    options: json.map(x => ({
-                        id: x.extid,
-                        label:
-                            x["general.id"] +
-                            (x.hasOwnProperty("general.title")
-                                ? ` | ${x["general.title"]}`
-                                : "")
+                    options: json.map(objectToMap => ({
+                        id: objectToMap.extid,
+                        label: this.createField(objectToMap, "id") +
+                            this.createField(objectToMap, "title")
                     })),
                     isLoading: false
                 });
             }
         );
+    }
+
+    /**
+     * This function is needed since RKH use _ref suffix for id and title.
+     */
+    createField(objectToCreateFrom, type) {
+        let fieldToReturn = "";
+        if (objectToCreateFrom.hasOwnProperty('general.' + type)) {
+            fieldToReturn = objectToCreateFrom['general.' + type]
+        }
+        if (objectToCreateFrom.hasOwnProperty('general.' + type + '_ref')) {
+            fieldToReturn = objectToCreateFrom['general.' + type + '_ref']
+        }
+        return fieldToReturn
     }
 
     getOptionById(queryId) {

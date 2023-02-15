@@ -73,8 +73,8 @@ class Sync extends React.Component {
                             .then(data => ({
                                 extid: data.extid,
                                 type: c.te_type, // TODO: Convert this to a type name using /api/timeedit/types
-                                id: data["general.id"],
-                                title: data["general.title"]
+                                id: this.createField(data, "id"),
+                                title: this.createField(data, "title")
                             }))
                             .catch(e => {
                                 // This will lead Promise.all to also reject at
@@ -92,6 +92,20 @@ class Sync extends React.Component {
                 });
             })
             .catch(e => console.error(e)); // (2)
+    }
+
+    /**
+     * This function is needed since RKH use _ref suffix for id and title.
+     */
+    createField(objectToCreateFrom, type) {
+        let fieldToReturn = "";
+        if (objectToCreateFrom.hasOwnProperty('general.' + type)) {
+            fieldToReturn = objectToCreateFrom['general.' + type]
+        }
+        if (objectToCreateFrom.hasOwnProperty('general.' + type + '_ref')) {
+            fieldToReturn = objectToCreateFrom['general.' + type + '_ref']
+        }
+        return fieldToReturn
     }
 
     feedback(message) {
