@@ -66,32 +66,32 @@ class TemplateErrorFeedback extends React.Component {
 
     componentDidMount() {
         this.refresh();
-        this.interval = setInterval(this.refresh, 1000);
+        // this.interval = setInterval(this.refresh, 1000);
     }
 
     componentWillUnmount() {
-        clearInterval(this.interval);
+        // clearInterval(this.interval);
     }
 
     refresh() {
-        fetch(urlParams(window.injectedEnv.API_URL, "/api/config/ok", {}))
-            .then(resp => {
-                if (resp.status !== 200)
-                    throw new Error(
-                        `Unexpected HTTP response from /api/config/ok: ${resp.status}`
-                    );
-                return resp.text();
-            })
-            .then(text => {
-                if (text === "True") this.setState({ templateError: false });
-                else if (text === "False")
-                    this.setState({ templateError: true });
-                else
-                    throw new Error(
-                        `Unexpected text response from /api/config/ok: ${text}`
-                    );
-            })
-            .catch(e => console.error(e));
+        // fetch(urlParams(window.injectedEnv.API_URL, "/api/config/ok", {}))
+        //     .then(resp => {
+        //         if (resp.status !== 200)
+        //             throw new Error(
+        //                 `Unexpected HTTP response from /api/config/ok: ${resp.status}`
+        //             );
+        //         return resp.text();
+        //     })
+        //     .then(text => {
+        //         if (text === "True") this.setState({ templateError: false });
+        //         else if (text === "False")
+        //             this.setState({ templateError: true });
+        //         else
+        //             throw new Error(
+        //                 `Unexpected text response from /api/config/ok: ${text}`
+        //             );
+        //     })
+        //     .catch(e => console.error(e));
     }
 
     render() {

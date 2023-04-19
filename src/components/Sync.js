@@ -234,6 +234,7 @@ class AddNew extends React.Component {
             <Button
                 renderIcon={IconPlusLine}
                 margin="small"
+                color="success"
                 onClick={() => this.setActive(true)}
             >
                 Add Object
