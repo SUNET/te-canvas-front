@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Heading, IconPlusLine, SimpleSelect, TextArea, TextInput, View } from "@instructure/ui";
+import { Button, Heading, IconPlusLine, IconTrashLine, SimpleSelect, TextArea, TextInput, View } from "@instructure/ui";
 
 import { urlParams } from "../util";
 
@@ -12,10 +12,7 @@ class Config extends React.Component {
              location: [],
              description: []
         };
-
         this.refresh = this.refresh.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-        this.submit = this.submit.bind(this);
     }
 
     componentDidMount() {
@@ -37,27 +34,18 @@ class Config extends React.Component {
             )
     }
 
-    submit() {
-        // for (let k of ["title", "location", "description"]) {
-        //     fetch(
-        //         urlParams(window.injectedEnv.API_URL, "/api/config", {
-        //             key: k,
-        //             value: this.state[k]
-        //         }),
-        //         {
-        //             method: "PUT"
-        //         }
-        //     ).then(resp => {
-        //         if (resp.status !== 200)
-        //             throw new Error(
-        //                 `Unexpected HTTP response from backend: ${resp.status}`
-        //             );
-        //     });
-        // }
-    }
-
-    handleChange(k, v) {
-        // this.setState({ [k]: v });
+    handleDelete(id) {
+        console.log("delete",id)
+        fetch(urlParams(window.injectedEnv.API_URL, "/api/config/template",{ id: id }),
+        { method: "DELETE"}).then(resp => {
+            if (resp.status !== 204)
+                throw new Error(`Unexpected HTTP response from backend: ${resp.status}`)
+            this.setState({
+                title: this.state.title.filter(n => n.id !== id),
+                location: this.state.location.filter(n => n.id !== id),
+                description: this.state.description.filter(n => n.id !== id),
+            })
+        })
     }
 
     render() {
@@ -79,7 +67,11 @@ class Config extends React.Component {
             >
                 Add title field
             </Button>
-            {this.state.title && this.state.title.map(r => r.te_type)}
+            {this.state.title && this.state.title.map(r => 
+                <Button key={r.id} renderIcon={IconTrashLine} onClick={() => this.handleDelete(r.id)} >
+                    <strong>{r.te_type}</strong> - {r.te_fields.join('.')}
+                </Button>
+                )}
                 </View>
                 <Heading level="h2">Location</Heading>
                 <View
@@ -97,7 +89,11 @@ class Config extends React.Component {
             >
                 Add location field
             </Button>
-            {this.state.location && this.state.location.map(r => r.te_type)}
+            {this.state.location && this.state.location.map(r =>
+                <Button key={r.id} renderIcon={IconTrashLine} onClick={() => this.handleDelete(r.id)} >
+                    <strong>{r.te_type}</strong> - {r.te_fields.join('.')}
+                </Button>
+                )}
                 </View>
                 <Heading level="h2">Description</Heading>
 
@@ -116,11 +112,12 @@ class Config extends React.Component {
             >
                 Add description field
             </Button>
-            {this.state.description && this.state.description.map(r => r.te_type)}
+            {this.state.description && this.state.description.map(r => 
+                <Button key={r.id} renderIcon={IconTrashLine} onClick={() => this.handleDelete(r.id)} >
+                    <strong>{r.te_type}</strong> - {r.te_fields.join('.')}
+                </Button>
+            )}
                 </View>
-                <Button onClick={this.submit}>Save and apply</Button>
-                &nbsp;
-                <Button onClick={this.refresh}>Discard edits</Button>
             </div>
         );
     }
