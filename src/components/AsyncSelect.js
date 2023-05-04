@@ -2,7 +2,7 @@ import React from "react";
 
 import { Select, Spinner } from "@instructure/ui";
 
-import { parseResponse, urlParams } from "../util";
+import { createField, parseResponse, urlParams } from "../util";
 
 let initState = {
     inputValue: "",
@@ -39,43 +39,26 @@ class AsyncSelect extends React.Component {
     refresh(search_string) {
         parseResponse(
             fetch(
-                urlParams(
-                    window.injectedEnv.API_URL,
-                    "/api/timeedit/objects",
-                    {
-                        type: this.props.type,
-                        number_of_objects: 10,
-                        ...(search_string === null
-                            ? {}
-                            : { search_string: search_string })
-                    }
-                )
+                urlParams(window.injectedEnv.API_URL, "/api/timeedit/objects", {
+                    type: this.props.type,
+                    number_of_objects: 10,
+                    ...(search_string === null
+                        ? {}
+                        : { search_string: search_string })
+                })
             ),
             json => {
                 this.setState({
                     options: json.map(objectToMap => ({
                         id: objectToMap.extid,
-                        label: this.createField(objectToMap, "id") +
-                            this.createField(objectToMap, "title")
+                        label:
+                            createField(objectToMap, "id") +
+                            createField(objectToMap, "title")
                     })),
                     isLoading: false
                 });
             }
         );
-    }
-
-    /**
-     * This function is needed since RKH use _ref suffix for id and title.
-     */
-    createField(objectToCreateFrom, type) {
-        let fieldToReturn = "";
-        if (objectToCreateFrom.hasOwnProperty('general.' + type)) {
-            fieldToReturn = objectToCreateFrom['general.' + type]
-        }
-        if (objectToCreateFrom.hasOwnProperty('general.' + type + '_ref')) {
-            fieldToReturn = objectToCreateFrom['general.' + type + '_ref']
-        }
-        return fieldToReturn
     }
 
     getOptionById(queryId) {

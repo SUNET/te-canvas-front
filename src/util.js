@@ -31,3 +31,18 @@ export function urlParams(baseUrl, path, params) {
 }
 
 export let MyContext = React.createContext();
+
+/**
+ * This function is needed since RKH use _ref suffix for id and title.
+ * TODO: solve this backend
+ */
+export function createField(objectToCreateFrom, type) {
+    let fieldToReturn = "";
+    if (objectToCreateFrom.hasOwnProperty("general." + type)) {
+        fieldToReturn = objectToCreateFrom["general." + type];
+    }
+    if (objectToCreateFrom.hasOwnProperty("general." + type + "_ref")) {
+        fieldToReturn = objectToCreateFrom["general." + type + "_ref"];
+    }
+    return fieldToReturn;
+}
