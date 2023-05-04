@@ -23,9 +23,14 @@ class Config extends React.Component {
             description: []
         };
         this.handleDelete = this.handleDelete.bind(this);
+        this.refresh = this.refresh.bind(this);
     }
 
     componentDidMount() {
+        this.refresh();
+    }
+
+    refresh() {
         fetch(urlParams(window.injectedEnv.API_URL, "/api/config/template"))
             .then(resp => {
                 if (resp.status !== 200)
@@ -63,16 +68,19 @@ class Config extends React.Component {
                     name="title"
                     children={this.state.title}
                     onDelete={this.handleDelete}
+                    onSubmit={this.refresh}
                 />
                 <ConfigSection
                     name="location"
                     children={this.state.location}
                     onDelete={this.handleDelete}
+                    onSubmit={this.refresh}
                 />
                 <ConfigSection
                     name="description"
                     children={this.state.description}
                     onDelete={this.handleDelete}
+                    onSubmit={this.refresh}
                 />
             </div>
         );
@@ -87,6 +95,7 @@ class ConfigSection extends React.Component {
         this.state = {
             addNew: false
         };
+        this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
     }
 
@@ -94,6 +103,36 @@ class ConfigSection extends React.Component {
         this.setState({
             addNew: false
         });
+    }
+
+    handleSubmit(type, field) {
+        fetch(
+            urlParams(window.injectedEnv.API_URL, "/api/config/template", {
+                name: this.props.name,
+                te_type: type,
+                te_field: field
+            }),
+            {
+                method: "POST"
+            } // TODO: Does not work with "Content-Type" header added (CORS)
+        )
+            .then(resp => {
+                switch (resp.status) {
+                    case 204: // Success, no content
+                        // We don't adjust the state manually, instead we fetch a new
+                        // state from the server. Since we wait for the POST fetch
+                        // to complete, we know that the following GET will include our
+                        // new connection.
+                        this.props.onSubmit();
+                        break;
+                    case 400: // Already exist
+                    default:
+                        throw new Error(
+                            `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
+                        );
+                }
+            })
+            .catch(e => console.error(e));
     }
 
     render() {
@@ -130,6 +169,7 @@ class ConfigSection extends React.Component {
                     <AddNewField
                         name={this.props.name}
                         onCancel={this.handleCancel}
+                        onSubmit={this.handleSubmit}
                     />
                 )}
                 {this.props.children &&
@@ -158,10 +198,15 @@ class AddNewField extends React.Component {
             isLoading: true
         };
         this.handleSelect = this.handleSelect.bind(this);
+        this.refresh = this.refresh.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
+        this.refresh();
+    }
+
+    refresh() {
         let promise = fetch(
             urlParams(window.injectedEnv.API_URL, "/api/timeedit/types", {})
         );
@@ -185,40 +230,8 @@ class AddNewField extends React.Component {
         };
     }
 
-    handleSubmit() {
-        fetch(
-            urlParams(window.injectedEnv.API_URL, "/api/config/template", {
-                name: this.props.name,
-                te_type: this.state.type,
-                te_fields: this.state.type
-            }),
-            {
-                method: "POST"
-            } // TODO: Does not work with "Content-Type" header added (CORS)
-        )
-            .then(resp => {
-                switch (resp.status) {
-                    case 204: // Success, no content
-                        // We don't adjust the state manually, instead we fetch a new
-                        // state from the server. Since we wait for the POST fetch
-                        // to complete, we know that the following GET will include our
-                        // new connection.
-                        this.context.refresh();
-                        this.props.setActive(false);
-                        break;
-                    case 404: // Already exists
-                    case 409:
-                        resp.json().then(json =>
-                            this.context.feedback(json.message)
-                        );
-                        break;
-                    default:
-                        throw new Error(
-                            `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
-                        );
-                }
-            })
-            .catch(e => console.error(e));
+    handleSubmit(field) {
+        this.props.onSubmit(this.state.type, field);
     }
 
     render() {
@@ -269,7 +282,8 @@ class SelectField extends React.Component {
             options: [],
             isShowingOptions: false,
             highlightedOptionId: null,
-            selectedOption: null
+            selectedOption: null,
+            selectedOptionId: null
         };
         this.refresh = this.refresh.bind(this);
         this.handleShowOptions = this.handleShowOptions.bind(this);
@@ -277,6 +291,7 @@ class SelectField extends React.Component {
         this.handleHighlightOption = this.handleHighlightOption.bind(this);
         this.handleSelectOption = this.handleSelectOption.bind(this);
         this.handleBlur = this.handleBlur.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -302,7 +317,8 @@ class SelectField extends React.Component {
                 this.setState({
                     options: json,
                     isLoading: false,
-                    inputValue: json[0]
+                    inputValue: json[0],
+                    selectedOptionId: json[0]
                 });
             }
         );
@@ -342,6 +358,16 @@ class SelectField extends React.Component {
         });
         // this.props.setField(id);
         console.log("setField", id);
+    }
+
+    handleSubmit() {
+        if (
+            this.state.options.some(
+                field => field === this.state.selectedOptionId
+            )
+        ) {
+            this.props.onSubmit(this.state.selectedOptionId);
+        }
     }
 
     render() {
@@ -398,10 +424,7 @@ class SelectField extends React.Component {
                             )}
                         </Select>
                         <div style={{ marginBottom: 10 }}>
-                            <Button
-                                margin="small"
-                                onClick={this.props.onSubmit}
-                            >
+                            <Button margin="small" onClick={this.handleSubmit}>
                                 Submit
                             </Button>
                             <Button onClick={this.props.onCancel}>
