@@ -3,9 +3,9 @@ import React from "react";
 import { Heading, InstUISettingsProvider, Tabs, canvas } from "@instructure/ui";
 
 import "../style.css";
-// import { urlParams } from "../util";
+import { urlParams } from "../util";
 import Config from "./Config";
-// import Feedback from "./Feedback";
+import Feedback from "./Feedback";
 import Sync from "./Sync";
 
 class App extends React.Component {
@@ -28,6 +28,7 @@ class App extends React.Component {
             <InstUISettingsProvider theme={canvas}>
                 <div id="main">
                     <Heading border="bottom">TimeEdit Sync</Heading>
+                    <TemplateStatusFeedback />
                     <Tabs
                         variant="secondary"
                         onRequestTabChange={this.handleTabChange}
@@ -51,58 +52,67 @@ class App extends React.Component {
     }
 }
 
-// TODO: reimplement template config check in frontend
-
-/**
-Check `/config/ok` at an interval of 1 second and display a warning message
-if the template config is incomplete.
-class TemplateErrorFeedback extends React.Component {
+//Check `/config/ok` at an interval of 1 second and display a warning message
+//if the template config is incomplete.
+class TemplateStatusFeedback extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            templateError: false
+            defaultError: false,
+            groupError: false
         };
         this.refresh = this.refresh.bind(this);
     }
 
     componentDidMount() {
         this.refresh();
-        // this.interval = setInterval(this.refresh, 1000);
+        this.interval = setInterval(this.refresh, 5000);
     }
 
     componentWillUnmount() {
-        // clearInterval(this.interval);
+        clearInterval(this.interval);
     }
 
     refresh() {
-fetch(urlParams(window.injectedEnv.API_URL, "/api/config/ok", {}))
-    .then(resp => {
-        if (resp.status !== 200)
-            throw new Error(
-                `Unexpected HTTP response from /api/config/ok: ${resp.status}`
-            );
-        return resp.text();
-    })
-    .then(text => {
-        if (text === "True") this.setState({ templateError: false });
-        else if (text === "False")
-            this.setState({ templateError: true });
-        else
-            throw new Error(
-                `Unexpected text response from /api/config/ok: ${text}`
-            );
-    })
-    .catch(e => console.error(e));
-}
-
-render() {
-    return (
-        this.state.templateError && (
-            <Feedback message="Syncing is suspended due to incomplete Event Template." />
+        fetch(
+            urlParams(window.injectedEnv.API_URL, "/api/config/ok", {
+                canvas_group: "LTI_CUSTOM_PROPERTY"
+            })
         )
-    );
+            .then(resp => {
+                if (resp.status !== 200)
+                    throw new Error(
+                        `Unexpected HTTP response from /api/config/ok: ${resp.status}`
+                    );
+                return resp.json();
+            })
+            .then(status => {
+                if (status.group.length < 3)
+                    this.setState({ groupError: true });
+                if (status.default.length < 3)
+                    this.setState({ defaultError: true });
+            })
+            .catch(e => console.error(e));
+    }
+
+    render() {
+        return (
+            <>
+                {this.state.groupError && this.state.defaultError && (
+                    <Feedback
+                        variant="error"
+                        message="Syncing is suspended due to missing Event Template."
+                    />
+                )}
+                {this.state.groupError && !this.state.defaultError && (
+                    <Feedback
+                        variant="info"
+                        message="No Event Template for group, using default configuration."
+                    />
+                )}
+            </>
+        );
+    }
 }
-}
-**/
 
 export default App;
