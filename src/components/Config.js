@@ -30,7 +30,13 @@ class Config extends React.Component {
     }
 
     refresh() {
-        fetch(urlParams(window.injectedEnv.API_URL, "/api/config/template"))
+        fetch(
+            urlParams(window.injectedEnv.API_URL, "/api/config/template", {
+                // MAGIC STRING ALERT: This key will be replaced on the Express
+                // side with LTI custom parameter `canvas_group`.
+                canvas_group: "LTI_CUSTOM_PROPERTY"
+            })
+        )
             .then(resp => {
                 if (resp.status !== 200)
                     throw new Error(
