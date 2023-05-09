@@ -2,7 +2,6 @@ import React from "react";
 
 import {
     Button,
-    Grid,
     Heading,
     IconPlusLine,
     IconTrashLine,
@@ -110,7 +109,10 @@ class ConfigSection extends React.Component {
             urlParams(window.injectedEnv.API_URL, "/api/config/template", {
                 name: this.props.name,
                 te_type: type,
-                te_field: field
+                te_field: field,
+                // MAGIC STRING ALERT: This key will be replaced on the Express
+                // side with LTI custom parameter `canvas_group`.
+                canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
             {
                 method: "POST"
@@ -133,6 +135,9 @@ class ConfigSection extends React.Component {
                 }
             })
             .catch(e => console.error(e));
+        this.setState({
+            addNew: false
+        });
     }
 
     render() {
@@ -170,6 +175,7 @@ class ConfigSection extends React.Component {
                         name={this.props.name}
                         onCancel={this.handleCancel}
                         onSubmit={this.handleSubmit}
+                        existingFields={Object.values(this.props.children)}
                     />
                 )}
                 {this.props.children &&
@@ -263,6 +269,7 @@ class AddNewField extends React.Component {
                                 type={this.state.type}
                                 onCancel={this.props.onCancel}
                                 onSubmit={this.handleSubmit}
+                                existingFields={this.props.existingFields}
                             />
                         </div>
                     </>
@@ -306,6 +313,7 @@ class SelectField extends React.Component {
             this.refresh();
         }
     }
+
     refresh() {
         parseResponse(
             fetch(
@@ -315,7 +323,9 @@ class SelectField extends React.Component {
             ),
             json => {
                 this.setState({
-                    options: json,
+                    options: json.filter(
+                        field => !this.props.existingFields.includes(field)
+                    ),
                     isLoading: false,
                     inputValue: json[0],
                     selectedOptionId: json[0]
