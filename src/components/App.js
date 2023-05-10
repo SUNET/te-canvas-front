@@ -4,9 +4,9 @@ import { Heading, InstUISettingsProvider, Tabs, canvas } from "@instructure/ui";
 
 import "../style.css";
 import { urlParams } from "../util";
-import Config from "./Config";
 import Feedback from "./Feedback";
 import Sync from "./Sync";
+import Config from "./config/Config";
 
 class App extends React.Component {
     constructor(props) {
@@ -40,10 +40,16 @@ class App extends React.Component {
                             <Sync />
                         </Tabs.Panel>
                         <Tabs.Panel
-                            renderTitle="Event Template"
+                            renderTitle="Course Event Template"
                             isSelected={this.state.activeTab === 1}
                         >
-                            <Config />
+                            <Config default="false" />
+                        </Tabs.Panel>
+                        <Tabs.Panel
+                            renderTitle="Default Event Template"
+                            isSelected={this.state.activeTab === 2}
+                        >
+                            <Config default="true" />
                         </Tabs.Panel>
                     </Tabs>
                 </div>
@@ -52,8 +58,6 @@ class App extends React.Component {
     }
 }
 
-//Check `/config/ok` at an interval of 1 second and display a warning message
-//if the template config is incomplete.
 class TemplateStatusFeedback extends React.Component {
     constructor(props) {
         super(props);
@@ -76,6 +80,7 @@ class TemplateStatusFeedback extends React.Component {
     refresh() {
         fetch(
             urlParams(window.injectedEnv.API_URL, "/api/config/ok", {
+                // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
                 canvas_group: "LTI_CUSTOM_PROPERTY"
             })
         )
@@ -87,10 +92,14 @@ class TemplateStatusFeedback extends React.Component {
                 return resp.json();
             })
             .then(status => {
-                if (status.group.length < 3)
+                if (status.group.length < 3 && !this.state.groupError)
                     this.setState({ groupError: true });
-                if (status.default.length < 3)
+                if (status.group.length === 3 && this.state.groupError)
+                    this.setState({ groupError: false });
+                if (status.default.length < 3 && !this.state.defaultError)
                     this.setState({ defaultError: true });
+                if (status.default.length === 3 && this.state.defaultError)
+                    this.setState({ defaultError: false });
             })
             .catch(e => console.error(e));
     }
@@ -107,7 +116,7 @@ class TemplateStatusFeedback extends React.Component {
                 {this.state.groupError && !this.state.defaultError && (
                     <Feedback
                         variant="info"
-                        message="No Event Template for group, using default configuration."
+                        message="No valid Event Template for group, using default configuration."
                     />
                 )}
             </>
