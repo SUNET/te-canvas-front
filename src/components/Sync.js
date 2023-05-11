@@ -28,8 +28,7 @@ class Sync extends React.Component {
         // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
         fetch(
             urlParams(window.injectedEnv.API_URL, "/api/connection", {
-                // MAGIC STRING ALERT: This key will be replaced on the Express
-                // side with LTI custom parameter `canvas_group`.
+                // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
                 canvas_group: "LTI_CUSTOM_PROPERTY"
             })
         )
