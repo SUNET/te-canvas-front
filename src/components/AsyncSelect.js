@@ -4,6 +4,10 @@ import { Select, Spinner } from "@instructure/ui";
 
 import { createField, parseResponse, urlParams } from "../util";
 
+// TODO: Refactor to solve this in backend.
+const TE_ID_FIELDS = ["general.id", "general.id_ref"];
+const TE_TITLE_FIELDS = ["general.title", "general.title_ref"];
+
 let initState = {
     inputValue: "",
     isShowingOptions: false,
@@ -28,6 +32,7 @@ class AsyncSelect extends React.Component {
         this.handleHighlightOption = this.handleHighlightOption.bind(this);
         this.handleSelectOption = this.handleSelectOption.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.createLabel = this.createLabel.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -49,16 +54,23 @@ class AsyncSelect extends React.Component {
             ),
             json => {
                 this.setState({
-                    options: json.map(objectToMap => ({
-                        id: objectToMap.extid,
-                        label:
-                            createField(objectToMap, "id") +
-                            createField(objectToMap, "title")
+                    options: json.map(te_object => ({
+                        id: te_object.extid,
+                        label: this.createLabel(te_object)
                     })),
                     isLoading: false
                 });
             }
         );
+    }
+
+    createLabel(te_object) {
+        const label = [];
+        for (const field of TE_ID_FIELDS.concat(TE_TITLE_FIELDS)) {
+            console.log("field: %s", field);
+            if (te_object.hasOwnProperty(field)) label.push(te_object[field]);
+        }
+        return label.join(" - ");
     }
 
     getOptionById(queryId) {
