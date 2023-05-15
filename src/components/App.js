@@ -116,7 +116,7 @@ class TemplateStatusFeedback extends React.Component {
                 {this.state.groupError && !this.state.defaultError && (
                     <Feedback
                         variant="info"
-                        message="No valid Event Template for group, using default configuration."
+                        message="No valid Event Template for course, using default configuration."
                     />
                 )}
             </>
