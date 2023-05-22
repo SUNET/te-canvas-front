@@ -9,6 +9,7 @@ import {
 } from "@instructure/ui";
 
 import { urlParams } from "../../util";
+import Feedback from "../Feedback";
 import AddFieldForm from "./AddFieldForm";
 
 class ConfigSection extends React.Component {
@@ -78,7 +79,7 @@ class ConfigSection extends React.Component {
                     {this.props.config_type.slice(1)}
                 </Heading>
                 <div>
-                    {!this.state.addNew && (
+                    {!this.state.addNew && this.props.children.length < 3 && (
                         <Button
                             renderIcon={IconPlusLine}
                             margin="small"
@@ -91,6 +92,12 @@ class ConfigSection extends React.Component {
                         >
                             Add {this.props.config_type} field
                         </Button>
+                    )}
+                    {this.props.children.length >= 3 && (
+                        <Feedback
+                            variant="info"
+                            message="Maximum field count reached."
+                        />
                     )}
                 </div>
                 {this.state.addNew && (
