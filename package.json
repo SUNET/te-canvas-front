@@ -1,6 +1,6 @@
 {
     "name": "te-canvas-front",
-    "version": "1.2.2",
+    "version": "1.2.3",
     "description": "",
     "scripts": {
         "start": "API_URL=$LTI_URL ./make-inject-env.sh && DEBUG=provider:* node src/lti.js",

@@ -61,6 +61,25 @@ class Config extends React.Component {
     render() {
         return (
             <>
+                {this.props.default ? (
+                    <p>
+                        This is <strong>default</strong> event template. It is
+                        used if an event template has not been configured for a
+                        course.
+                    </p>
+                ) : (
+                    <p>
+                        This is the event template{" "}
+                        <strong>for this course</strong>. If it is valid, it
+                        will be used instead of the default event template.
+                    </p>
+                )}
+                <p>
+                    Event template control what content the title, location and
+                    description fields in the canvas event will have. Thus, we
+                    create a template with the Timeedit object fields we want to
+                    use.
+                </p>
                 <ConfigSection
                     config_type="title"
                     default={this.props.default}
