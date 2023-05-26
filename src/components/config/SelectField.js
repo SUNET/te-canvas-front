@@ -12,7 +12,6 @@ class SelectField extends React.Component {
             options: [],
             isShowingOptions: false,
             highlightedOptionId: null,
-            selectedOption: null,
             selectedOptionId: null
         };
         this.refresh = this.refresh.bind(this);
@@ -45,11 +44,12 @@ class SelectField extends React.Component {
             json => {
                 this.setState({
                     options: json.filter(
-                        field => !this.props.existingFields.includes(field)
+                        field =>
+                            !this.props.existingFields.includes(field.extid)
                     ),
                     isLoading: false,
-                    inputValue: json[0],
-                    selectedOptionId: json[0]
+                    inputValue: json[0].name,
+                    selectedOptionId: json[0].extid
                 });
             }
         );
@@ -64,12 +64,12 @@ class SelectField extends React.Component {
     handleHideOptions() {
         this.setState({
             isShowingOptions: false,
-            highlightedOptionId: null
+            highlightedOption: null
         });
     }
 
     handleBlur() {
-        this.setState({ highlightedOptionId: null });
+        this.setState({ highlightedOption: null });
     }
 
     handleHighlightOption(event, { id }) {
@@ -77,24 +77,22 @@ class SelectField extends React.Component {
         this.setState({
             selectedOptionId: id,
             highlightedOptionId: id,
-            inputValue: id
+            inputValue: this.state.options.find(o => o.extid === id).name
         });
     }
 
     handleSelectOption(_, { id }) {
         this.setState({
             selectedOptionId: id,
-            inputValue: id,
+            inputValue: this.state.options.find(o => o.extid === id).name,
             isShowingOptions: false
         });
-        // this.props.setField(id);
-        console.log("setField", id);
     }
 
     handleSubmit() {
         if (
             this.state.options.some(
-                field => field === this.state.selectedOptionId
+                o => o.extid === this.state.selectedOptionId
             )
         ) {
             this.props.onSubmit(this.state.selectedOptionId);
@@ -130,20 +128,20 @@ class SelectField extends React.Component {
                             onRequestSelectOption={this.handleSelectOption}
                         >
                             {options.length > 0 ? (
-                                options.map(field => {
+                                options.map(({ extid, name }) => {
                                     return (
                                         <Select.Option
-                                            id={field}
-                                            key={field}
-                                            value={field}
+                                            id={extid}
+                                            key={extid}
+                                            value={extid}
                                             isHighlighted={
-                                                field === highlightedOptionId
+                                                extid === highlightedOptionId
                                             }
                                             isSelected={
-                                                field === selectedOptionId
+                                                extid === selectedOptionId
                                             }
                                         >
-                                            {field}
+                                            {name}
                                         </Select.Option>
                                     );
                                 })
