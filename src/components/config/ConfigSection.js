@@ -104,7 +104,9 @@ class ConfigSection extends React.Component {
                     <AddFieldForm
                         onCancel={this.handleCancel}
                         onSubmit={this.handleSubmit}
-                        existingFields={Object.values(this.props.children)}
+                        existingFields={Object.values(
+                            this.props.children.map(c => c.te_field)
+                        )}
                     />
                 )}
                 {this.props.children &&
@@ -114,7 +116,8 @@ class ConfigSection extends React.Component {
                                 onClick={() => this.props.onDelete(c.id)}
                                 renderIcon={IconTrashLine}
                             >
-                                <strong>{c.te_type}</strong>-{c.te_field}
+                                <strong>{c.te_type_name}</strong>:{" "}
+                                {c.te_field_name}
                             </Button>
                         </div>
                     ))}
