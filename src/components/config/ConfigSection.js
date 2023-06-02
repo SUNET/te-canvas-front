@@ -109,18 +109,16 @@ class ConfigSection extends React.Component {
                         )}
                     />
                 )}
-                {this.props.children &&
-                    this.props.children.map(c => (
-                        <div key={c.id} style={{ marginBottom: 10 }}>
-                            <Button
-                                onClick={() => this.props.onDelete(c.id)}
-                                renderIcon={IconTrashLine}
-                            >
-                                <strong>{c.te_type_name}</strong>:{" "}
-                                {c.te_field_name}
-                            </Button>
-                        </div>
-                    ))}
+                {this.props.children?.map(c => (
+                    <div key={c.id} style={{ marginBottom: 10 }}>
+                        <Button
+                            onClick={() => this.props.onDelete(c.id)}
+                            renderIcon={IconTrashLine}
+                        >
+                            <strong>{c.te_type_name}</strong>: {c.te_field_name}
+                        </Button>
+                    </div>
+                ))}
             </View>
         );
     }
