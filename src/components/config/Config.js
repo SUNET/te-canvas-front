@@ -34,7 +34,11 @@ class Config extends React.Component {
                     );
                 return resp.json();
             })
-            .then(data => this.setState(data));
+            .then(data => this.setState(data))
+            .catch(e => {
+                console.error(e);
+                setTimeout(this.refresh(), 2000);
+            });
     }
 
     handleDelete(id) {
@@ -45,17 +49,19 @@ class Config extends React.Component {
                 canvas_group: "LTI_CUSTOM_PROPERTY"
             }),
             { method: "DELETE" }
-        ).then(resp => {
-            if (resp.status !== 204)
-                throw new Error(
-                    `Unexpected HTTP response from backend: ${resp.status}`
-                );
-            this.setState({
-                title: this.state.title.filter(n => n.id !== id),
-                location: this.state.location.filter(n => n.id !== id),
-                description: this.state.description.filter(n => n.id !== id)
-            });
-        });
+        )
+            .then(resp => {
+                if (resp.status !== 204)
+                    throw new Error(
+                        `Unexpected HTTP response from backend: ${resp.status}`
+                    );
+                this.setState({
+                    title: this.state.title.filter(n => n.id !== id),
+                    location: this.state.location.filter(n => n.id !== id),
+                    description: this.state.description.filter(n => n.id !== id)
+                });
+            })
+            .catch(e => console.error(e));
     }
 
     render() {
