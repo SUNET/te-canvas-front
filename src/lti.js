@@ -103,7 +103,7 @@ lti.app.all("/api/*", function (req, res, next) {
                 res.status(backend_res.statusCode).send(data);
             });
         }
-    )
+    );
     req.on("error", e => console.error(`Error from API server: ${e}`));
     req.end();
 });
@@ -131,4 +131,6 @@ async function setup() {
     }
 }
 
-setup().then(() => console.log(platformExtras));
+setup()
+    .then(() => console.log(platformExtras))
+    .catch(e => console.error(e));
