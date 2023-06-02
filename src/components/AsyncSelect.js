@@ -2,7 +2,7 @@ import React from "react";
 
 import { Select, Spinner } from "@instructure/ui";
 
-import { createField, parseResponse, urlParams } from "../util";
+import { parseResponse, urlParams } from "../util";
 
 // TODO: Refactor to solve this in backend.
 const TE_ID_FIELDS = ["general.id", "general.id_ref"];
