@@ -244,7 +244,9 @@ class AddNewForm extends React.Component {
 
     componentDidMount() {
         let promise = fetch(
-            urlParams(window.injectedEnv.API_URL, "/api/timeedit/types", {})
+            urlParams(window.injectedEnv.API_URL, "/api/timeedit/types", {
+                whitelisted: "true"
+            })
         );
         parseResponse(promise, json => {
             this.setState({
