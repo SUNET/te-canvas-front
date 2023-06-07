@@ -1,15 +1,19 @@
 import React from "react";
 
 import { urlParams } from "../../util";
+import Feedback from "../Feedback";
 import ConfigSection from "./ConfigSection";
 
 class Config extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            title: [],
-            location: [],
-            description: []
+            template: {
+                title: [],
+                location: [],
+                description: []
+            },
+            isAdmin: true
         };
         this.handleDelete = this.handleDelete.bind(this);
         this.refresh = this.refresh.bind(this);
@@ -28,16 +32,22 @@ class Config extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status !== 200)
+                if (resp.status === 403) {
+                    this.setState({ isAdmin: false });
+                    throw new Error(
+                        "User is unauthorized to change default template"
+                    );
+                }
+                if (resp.status !== 200 && resp.status !== 403)
                     throw new Error(
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
                 return resp.json();
             })
-            .then(data => this.setState(data))
+            .then(data => this.setState({ template: data }))
             .catch(e => {
                 console.error(e);
-                setTimeout(this.refresh(), 2000);
+                this.state.isAdmin && setTimeout(this.refresh(), 2000);
             });
     }
 
@@ -56,9 +66,17 @@ class Config extends React.Component {
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
                 this.setState({
-                    title: this.state.title.filter(n => n.id !== id),
-                    location: this.state.location.filter(n => n.id !== id),
-                    description: this.state.description.filter(n => n.id !== id)
+                    template: {
+                        title: this.state.template.title.filter(
+                            n => n.id !== id
+                        ),
+                        location: this.state.template.location.filter(
+                            n => n.id !== id
+                        ),
+                        description: this.state.template.description.filter(
+                            n => n.id !== id
+                        )
+                    }
                 });
             })
             .catch(e => console.error(e));
@@ -86,27 +104,36 @@ class Config extends React.Component {
                     create a template with the Timeedit object fields we want to
                     use.
                 </p>
-                <ConfigSection
-                    config_type="title"
-                    default={this.props.default}
-                    children={this.state.title}
-                    onDelete={this.handleDelete}
-                    onSubmit={this.refresh}
-                />
-                <ConfigSection
-                    config_type="location"
-                    default={this.props.default}
-                    children={this.state.location}
-                    onDelete={this.handleDelete}
-                    onSubmit={this.refresh}
-                />
-                <ConfigSection
-                    config_type="description"
-                    default={this.props.default}
-                    children={this.state.description}
-                    onDelete={this.handleDelete}
-                    onSubmit={this.refresh}
-                />
+                {this.state.isAdmin ? (
+                    <>
+                        <ConfigSection
+                            config_type="title"
+                            default={this.props.default}
+                            children={this.state.template.title}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                        />
+                        <ConfigSection
+                            config_type="location"
+                            default={this.props.default}
+                            children={this.state.template.location}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                        />
+                        <ConfigSection
+                            config_type="description"
+                            default={this.props.default}
+                            children={this.state.template.description}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                        />
+                    </>
+                ) : (
+                    <Feedback
+                        variant="error"
+                        message="You must be a Canvas administrator to change default config."
+                    />
+                )}
             </>
         );
     }
