@@ -94,7 +94,10 @@ lti.app.all("/api/*", function (req, res, next) {
         extras.api_url,
         {
             path: req.path + "?" + params.toString(),
-            method: req.method
+            method: req.method,
+            headers: {
+                "X-LTI_ROLES": res.locals.context.roles
+            }
         },
         backend_res => {
             let data = "";
