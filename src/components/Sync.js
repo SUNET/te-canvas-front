@@ -12,11 +12,7 @@ class Sync extends React.Component {
         super(props);
         this.state = {
             searchObjects: {},
-            feedbackMessage: null,
-            contextProviderValue: {
-                refresh: this.refresh(),
-                feedback: this.feedback()
-            }
+            feedbackMessage: null
         };
 
         this.refresh = this.refresh.bind(this);
@@ -105,7 +101,12 @@ class Sync extends React.Component {
     }
     render() {
         return (
-            <MyContext.Provider value={this.state.contextProviderValue}>
+            <MyContext.Provider
+                value={{
+                    refresh: this.refresh,
+                    feedback: this.feedback
+                }}
+            >
                 <div id="sync">
                     <SearchObjects
                         refresh={this.refresh}
