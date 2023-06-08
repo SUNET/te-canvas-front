@@ -47,7 +47,7 @@ class Config extends React.Component {
             .then(data => this.setState({ template: data }))
             .catch(e => {
                 console.error(e);
-                this.state.isAdmin && setTimeout(this.refresh(), 2000);
+                this.state.isAdmin && setTimeout(() => this.refresh(), 2000);
             });
     }
 

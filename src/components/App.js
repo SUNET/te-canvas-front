@@ -7,6 +7,7 @@ import { urlParams } from "../util";
 import Feedback from "./Feedback";
 import Sync from "./Sync";
 import Config from "./config/Config";
+import WhitelistTypes from "./config/WhitelistTypes";
 
 class App extends React.Component {
     constructor(props) {
@@ -50,6 +51,12 @@ class App extends React.Component {
                             isSelected={this.state.activeTab === 2}
                         >
                             <Config default={true} />
+                        </Tabs.Panel>
+                        <Tabs.Panel
+                            renderTitle="Whitelist types"
+                            isSelected={this.state.activeTab === 3}
+                        >
+                            <WhitelistTypes />
                         </Tabs.Panel>
                     </Tabs>
                 </div>

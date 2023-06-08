@@ -67,7 +67,6 @@ class AsyncSelect extends React.Component {
     createLabel(te_object) {
         const label = [];
         for (const field of TE_ID_FIELDS.concat(TE_TITLE_FIELDS)) {
-            console.log("field: %s", field);
             if (te_object.hasOwnProperty(field)) label.push(te_object[field]);
         }
         return label.join(" - ");
