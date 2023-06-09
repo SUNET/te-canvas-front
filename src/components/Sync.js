@@ -6,12 +6,13 @@ import { IconPlusLine, IconTrashLine } from "@instructure/ui-icons";
 import { MyContext, createField, parseResponse, urlParams } from "../util";
 import AsyncSelect from "./AsyncSelect";
 import Feedback from "./Feedback";
+import SyncStatus from "./SyncStatus";
 
 class Sync extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchObjects: {},
+            searchObjects: [],
             feedbackMessage: null
         };
 
@@ -38,9 +39,6 @@ class Sync extends React.Component {
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
                 return resp.json();
-            })
-            .then(json => {
-                return json;
             })
             .then(connections => {
                 // We then go through each connection and start an asynchronous
@@ -108,6 +106,7 @@ class Sync extends React.Component {
                 }}
             >
                 <div id="sync">
+                    <SyncStatus connections={this.state.searchObjects.length} />
                     <SearchObjects
                         refresh={this.refresh}
                         searchObjects={this.state.searchObjects}
@@ -181,10 +180,8 @@ class SearchObject extends React.Component {
                         alignItems: "center"
                     }}
                 >
-                    <div>{this.props.type}</div>
-                    <div>{this.props.title}</div>
-                    <div>{this.props.id}</div>
-                    <div>{this.props.extid}</div>
+                    <div>Title: {this.props.title}</div>
+                    <div>Id: {this.props.id}</div>
                     <Button
                         renderIcon={IconTrashLine}
                         onClick={() => this.delete(this.props.extid)}
