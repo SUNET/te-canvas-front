@@ -116,12 +116,14 @@ class TemplateStatusFeedback extends React.Component {
             <>
                 {this.state.groupError && this.state.defaultError && (
                     <Feedback
+                        close
                         variant="error"
                         message="Syncing is suspended due to missing Event Template."
                     />
                 )}
                 {this.state.groupError && !this.state.defaultError && (
                     <Feedback
+                        close
                         variant="info"
                         message="No valid Event Template for course, using default configuration."
                     />

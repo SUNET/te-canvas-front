@@ -47,18 +47,23 @@ class SyncStatus extends React.Component {
             <>
                 {this.props.connections > 0 &&
                     this.state.status === "success" && (
-                        <Feedback variant="success" message="Sync completed" />
+                        <Feedback
+                            variant="success"
+                            message="Sync completed"
+                            close
+                        />
                     )}
                 {this.props.connections > 0 &&
                     this.state.status === "in_progress" && (
                         <Feedback
                             variant="warning"
                             message="Sync in progress"
+                            close
                         />
                     )}
                 {this.props.connections > 0 &&
                     this.state.status === "error" && (
-                        <Feedback variant="error" message="Sync error" />
+                        <Feedback variant="error" message="Sync error" close />
                     )}
             </>
         );
