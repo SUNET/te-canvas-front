@@ -8,7 +8,11 @@ class Feedback extends React.Component {
     }
     render() {
         return this.props.message ? (
-            <Alert variant={this.props.variant} margin="small">
+            <Alert
+                variant={this.props.variant}
+                margin="small"
+                renderCloseButtonLabel={this.props.close ? "Close" : ""}
+            >
                 {this.props.message}
             </Alert>
         ) : null;
