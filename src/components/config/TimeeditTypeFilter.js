@@ -3,8 +3,9 @@ import React from "react";
 import { Checkbox, FormFieldGroup, Spinner } from "@instructure/ui";
 
 import { urlParams } from "../../util";
+import Feedback from "../Feedback";
 
-class WhitelistTypes extends React.Component {
+class TimeeditTypeFilter extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -31,7 +32,9 @@ class WhitelistTypes extends React.Component {
             .then(resp => {
                 if (resp.status === 403) {
                     this.setState({ isAdmin: false });
-                    throw new Error("User is unauthorized to update whitelist");
+                    throw new Error(
+                        "User is unauthorized to update TimeEdit type filter"
+                    );
                 }
                 if (resp.status !== 200 && resp.status !== 403)
                     throw new Error(
@@ -125,30 +128,41 @@ class WhitelistTypes extends React.Component {
     render() {
         return (
             <>
-                <p>
-                    This is a whitelist of which timeedit types we show when
-                    adding connections.
-                </p>
-                {this.state.types && this.state.whitelist ? (
-                    <FormFieldGroup>
-                        {this.state.types?.map(t => (
-                            <Checkbox
-                                size="small"
-                                variant="toggle"
-                                key={t.extid}
-                                value={t.extid}
-                                label={t.title}
-                                checked={this.state.whitelist.includes(t.extid)}
-                                onChange={this.handleToggle}
-                            />
-                        ))}
-                    </FormFieldGroup>
+                {this.state.isAdmin ? (
+                    <>
+                        <p>
+                            This is a filter of which TimeEdit types to show
+                            when adding Sync Objects.
+                        </p>
+                        {this.state.types && this.state.whitelist ? (
+                            <FormFieldGroup>
+                                {this.state.types?.map(t => (
+                                    <Checkbox
+                                        size="small"
+                                        variant="toggle"
+                                        key={t.extid}
+                                        value={t.extid}
+                                        label={t.title}
+                                        checked={this.state.whitelist.includes(
+                                            t.extid
+                                        )}
+                                        onChange={this.handleToggle}
+                                    />
+                                ))}
+                            </FormFieldGroup>
+                        ) : (
+                            <Spinner />
+                        )}
+                    </>
                 ) : (
-                    <Spinner />
+                    <Feedback
+                        variant="error"
+                        message="You must be a Canvas administrator to change TimeEdit type filter."
+                    />
                 )}
             </>
         );
     }
 }
 
-export default WhitelistTypes;
+export default TimeeditTypeFilter;

@@ -100,9 +100,7 @@ class Config extends React.Component {
                 )}
                 <p>
                     Event template control what content the title, location and
-                    description fields in the canvas event will have. Thus, we
-                    create a template with the Timeedit object fields we want to
-                    use.
+                    description fields in canvas events will have.
                 </p>
                 {this.state.isAdmin ? (
                     <>

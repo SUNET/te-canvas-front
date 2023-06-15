@@ -7,7 +7,7 @@ import { urlParams } from "../util";
 import Feedback from "./Feedback";
 import Sync from "./Sync";
 import Config from "./config/Config";
-import WhitelistTypes from "./config/WhitelistTypes";
+import TimeeditTypeFilter from "./config/TimeeditTypeFilter";
 
 class App extends React.Component {
     constructor(props) {
@@ -53,10 +53,10 @@ class App extends React.Component {
                             <Config default={true} />
                         </Tabs.Panel>
                         <Tabs.Panel
-                            renderTitle="Whitelist types"
+                            renderTitle="TimeEdit Type Filter"
                             isSelected={this.state.activeTab === 3}
                         >
-                            <WhitelistTypes />
+                            <TimeeditTypeFilter />
                         </Tabs.Panel>
                     </Tabs>
                 </div>
