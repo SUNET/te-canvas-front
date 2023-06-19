@@ -26,9 +26,9 @@ In this scheme, the front end will consist of two parts. One is the client-side 
 
 Besides the environment variables listed under [Configuration](#configuration), you also need the following files at repo root:
 
-- [platforms.json](#platforms.json)
-- ssl.crt
-- ssl.key
+-   [platforms.json](#platforms.json)
+-   ssl.crt
+-   ssl.key
 
 ### Without Docker (not for production)
 
@@ -66,7 +66,7 @@ npm run start
 
 > The main Docker compose file comes with an [override](https://docs.docker.com/compose/extends/) file, which exposes ports for all containers and builds images locally. This is convenient to use during development but not safe in production. **Note that `docker-compose.override.yml` is enabled by default** and simply doing `docker-compose up` in this repo will start in **unsafe dev mode**.
 >
-> To use *only* the production-ready `docker-compose.yml`, you can do `docker-compose -f docker-compose.yml up`. But since we use Puppet for all this anyway, `docker-compose.override.yml` should never be near our production environment.
+> To use _only_ the production-ready `docker-compose.yml`, you can do `docker-compose -f docker-compose.yml up`. But since we use Puppet for all this anyway, `docker-compose.override.yml` should never be near our production environment.
 
 Start LTI server, MongoDB, and Nginx:
 
@@ -82,20 +82,20 @@ docker-compose up
 
 ## Configuration
 
-| Environment variable | Description                                               | Predefined in docker-compose file? |
-| -                    | -                                                         | -                                  |
-| `API_URL`            | Location of API server, used in fetch requests from the React app. In standalone mode this is a single back end server. In LTI mode this should point to the LTI server, which acts as reverse proxy for multiple back ends. | |
-|                      |                                                           |                                    |
-| `LTI_URL`            | LTI server location (same as `API_URL`).                  |                                    |
-| `LTI_PORT`           | LTI server port.                                          |                                    |
-|                      |                                                           |                                    |
-| `MONGO_URL`          | Location of MongoDB, used by ltijs library.               | ✅                                 |
-| `MONGO_USERNAME`     | MongoDB username.                                         |                                    |
-| `MONGO_PASSWORD`     | MongoDB password.                                         |                                    |
-|                      |                                                           |                                    |
-| `ENCRYPTION_KEY`     | A random string used by ltijs to sign cookies and tokens. |                                    |
-|                      |                                                           |                                    |
-| `TAG_NODE`           | Tag to use for `docker.sunet.se/te-canvas-front`.         | ✅                                 |
+| Environment variable | Description                                                                                                                                                                                                                  | Predefined in docker-compose file? |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `API_URL`            | Location of API server, used in fetch requests from the React app. In standalone mode this is a single back end server. In LTI mode this should point to the LTI server, which acts as reverse proxy for multiple back ends. |                                    |
+|                      |                                                                                                                                                                                                                              |                                    |
+| `LTI_URL`            | LTI server location (same as `API_URL`).                                                                                                                                                                                     |                                    |
+| `LTI_PORT`           | LTI server port.                                                                                                                                                                                                             |                                    |
+|                      |                                                                                                                                                                                                                              |                                    |
+| `MONGO_URL`          | Location of MongoDB, used by ltijs library.                                                                                                                                                                                  | ✅                                 |
+| `MONGO_USERNAME`     | MongoDB username.                                                                                                                                                                                                            |                                    |
+| `MONGO_PASSWORD`     | MongoDB password.                                                                                                                                                                                                            |                                    |
+|                      |                                                                                                                                                                                                                              |                                    |
+| `ENCRYPTION_KEY`     | A random string used by ltijs to sign cookies and tokens.                                                                                                                                                                    |                                    |
+|                      |                                                                                                                                                                                                                              |                                    |
+| `TAG_NODE`           | Tag to use for `docker.sunet.se/te-canvas-front`.                                                                                                                                                                            | ✅                                 |
 
 ## `platforms.json`
 
@@ -119,8 +119,8 @@ This file contains information about each Canvas instance (platform). This is no
 ]
 ```
 
-- `api_url`: URL to back end server, where the LTI server will forward API requests for this particular platform.
-- `authorized_roles`: Any user which has one of these roles (defined in LTI standars) is allowed access to the back end. If the user does not have an authorized role, the server will reply with an error message including the current user's actual roles (also printed in the server logs). This can be used to find out which roles a given user has, i.e. set `authorized_roles` to `[]`.
+-   `api_url`: URL to back end server, where the LTI server will forward API requests for this particular platform.
+-   `authorized_roles`: Any user which has one of these roles (defined in LTI standars) is allowed access to the back end. If the user does not have an authorized role, the server will reply with an error message including the current user's actual roles (also printed in the server logs). This can be used to find out which roles a given user has, i.e. set `authorized_roles` to `[]`.
 
 Rest of the keys are passed to ltijs as mentioned above. The Canvas URLs will be the same for every instance in Canvas's production environment (also exists: beta and test).
 
@@ -135,18 +135,3 @@ The key `extensions.settings.placements.visibility` decides which type of Canvas
 The key `custom_fields` specifies a set of Canvas variables to add to the JWT passed with each request. In our case we want to get the course ID.
 
 The way we use this to pass data to the back end is implemented in a general way in `src/lti.js` (the LTI server's start point). If the front end receives a request with query parameter `x=LTI_CUSTOM_PROPERTY`, we look up key `x` in the JWT Canvas gave us and replace `LTI_CUSTOM_PROPERTY` with the real value, before forwarding the request to the back end.
-
-## Deploy app in Canvas
-Create a developer key of type LTI in Canvas.
-You do this in Admin > Developer Keys
-![](img/canvas_developer_key.png)
-
-Paste `te-canvas.sunet.se/lti.json` when creating the key.
-![](img/canvas_create_developer_key.png)
-
-Then go to Admin > Settings > Apps > View app configurations.
-Create the app using the client id from the developer key you just created.
-![](img/canvas_create_app.png)
-
-Now the frontend can be reached from course view in Canvas.
-
