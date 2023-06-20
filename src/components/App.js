@@ -19,6 +19,7 @@ class App extends React.Component {
             apiError: false
         };
         this.handleTabChange = this.handleTabChange.bind(this);
+        this.setApiError = this.setApiError.bind(this);
     }
 
     handleTabChange(_, { index }) {
@@ -27,12 +28,19 @@ class App extends React.Component {
         });
     }
 
+    setApiError(state) {
+        this.setState({ apiError: state });
+    }
+
     render() {
         return (
             <InstUISettingsProvider theme={canvas}>
                 <div id="main">
                     <Heading border="bottom">TimeEdit Sync</Heading>
-                    <TemplateStatusFeedback />
+                    <TemplateStatusFeedback
+                        apiError={this.state.apiError}
+                        setApiError={this.setApiError}
+                    />
                     <Tabs
                         variant="secondary"
                         onRequestTabChange={this.handleTabChange}
@@ -41,7 +49,7 @@ class App extends React.Component {
                             renderTitle="Sync Objects"
                             isSelected={this.state.activeTab === 0}
                         >
-                            <Sync />
+                            <Sync apiError={this.state.apiError} />
                         </Tabs.Panel>
                         <Tabs.Panel
                             renderTitle="Course Event Template"
@@ -73,7 +81,8 @@ class TemplateStatusFeedback extends React.Component {
         super(props);
         this.state = {
             defaultError: false,
-            groupError: false
+            groupError: false,
+            apiError: false
         };
         this.refresh = this.refresh.bind(this);
     }
@@ -95,7 +104,7 @@ class TemplateStatusFeedback extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status === 500) this.setState({ apiError: true });
+                if (resp.status === 500) this.props.setApiError(true);
                 if (resp.status !== 200) {
                     throw new Error(
                         `Unexpected HTTP response from /api/config/ok: ${resp.status}`
@@ -105,13 +114,14 @@ class TemplateStatusFeedback extends React.Component {
             })
             .then(status => {
                 if (status.group.length < 3 && !this.state.groupError)
-                    this.setState({ groupError: true, apiError: false });
+                    this.setState({ groupError: true });
                 if (status.group.length === 3 && this.state.groupError)
-                    this.setState({ groupError: false, apiError: false });
+                    this.setState({ groupError: false });
                 if (status.default.length < 3 && !this.state.defaultError)
-                    this.setState({ defaultError: true, apiError: false });
+                    this.setState({ defaultError: true });
                 if (status.default.length === 3 && this.state.defaultError)
-                    this.setState({ defaultError: false, apiError: false });
+                    this.setState({ defaultError: false });
+                this.props.setApiError(false);
             })
             .catch(e => {
                 console.error(e);
@@ -121,26 +131,29 @@ class TemplateStatusFeedback extends React.Component {
     render() {
         return (
             <>
-                {this.state.groupError && this.state.defaultError && (
-                    <Feedback
-                        close
-                        variant="error"
-                        message="Syncing is suspended due to missing Event Template."
-                    />
-                )}
-                {this.state.groupError && !this.state.defaultError && (
-                    <Feedback
-                        close
-                        variant="info"
-                        message="No valid Event Template for course, using default configuration."
-                    />
-                )}
-                {this.state.apiError && (
+                {this.props.apiError ? (
                     <Feedback
                         close
                         variant="error"
                         message="Error getting Event Template status from API"
                     />
+                ) : (
+                    <>
+                        {this.state.groupError && this.state.defaultError && (
+                            <Feedback
+                                close
+                                variant="error"
+                                message="Syncing is suspended due to missing Event Template."
+                            />
+                        )}
+                        {this.state.groupError && !this.state.defaultError && (
+                            <Feedback
+                                close
+                                variant="info"
+                                message="No valid Event Template for course, using default configuration."
+                            />
+                        )}
+                    </>
                 )}
             </>
         );
