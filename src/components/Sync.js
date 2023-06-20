@@ -36,7 +36,7 @@ class Sync extends React.Component {
         )
             .then(resp => {
                 if (resp.status !== 200) {
-                    this.setState({ apiError: true });
+                    this.setState({ apiErrorConnection: true });
                     throw new Error(
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
@@ -94,8 +94,9 @@ class Sync extends React.Component {
             })
             .catch(e => {
                 console.error(e);
-                this.setState({ apiError: true });
-                setTimeout(() => this.refresh(), 5000);
+                this.setState({ apiErrorConnection: true });
+                if (!this.props.apiError)
+                    setTimeout(() => this.refresh(), 5000);
             }); // (2)
     }
 
@@ -302,7 +303,8 @@ class AddNewForm extends React.Component {
             })
             .catch(e => {
                 console.error(e);
-                setTimeout(() => this.getTypes(), 5000);
+                if (!this.props.apiError)
+                    setTimeout(() => this.getTypes(), 5000);
             });
     }
 

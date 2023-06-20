@@ -104,7 +104,8 @@ class TemplateStatusFeedback extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status === 500) this.props.setApiError(true);
+                if (resp.status === 500 && !this.props.apiError)
+                    this.props.setApiError(true);
                 if (resp.status !== 200) {
                     throw new Error(
                         `Unexpected HTTP response from /api/config/ok: ${resp.status}`
@@ -121,7 +122,7 @@ class TemplateStatusFeedback extends React.Component {
                     this.setState({ defaultError: true });
                 if (status.default.length === 3 && this.state.defaultError)
                     this.setState({ defaultError: false });
-                this.props.setApiError(false);
+                if (this.props.apiError) this.props.setApiError(false);
             })
             .catch(e => {
                 console.error(e);
@@ -150,7 +151,7 @@ class TemplateStatusFeedback extends React.Component {
                             <Feedback
                                 close
                                 variant="info"
-                                message="No valid Event Template for course, using default configuration."
+                                message="No valid Event Template for course, using default Event Template."
                             />
                         )}
                     </>
