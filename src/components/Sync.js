@@ -12,7 +12,7 @@ class Sync extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchObjects: [],
+            searchObjects: null,
             feedbackMessage: null,
             apiErrorConnection: false
         };
@@ -121,7 +121,7 @@ class Sync extends React.Component {
                 ) : (
                     <>
                         {this.state.apiErrorConnection ||
-                        this.state.searchObjects.length === 0 ? (
+                        !this.state.searchObjects ? (
                             <Spinner />
                         ) : (
                             <div id="sync">
