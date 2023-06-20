@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, SimpleSelect, View } from "@instructure/ui";
+import { Button, SimpleSelect, Spinner, View } from "@instructure/ui";
 import { IconPlusLine, IconTrashLine } from "@instructure/ui-icons";
 
 import { MyContext, createField, parseResponse, urlParams } from "../util";
@@ -13,7 +13,8 @@ class Sync extends React.Component {
         super(props);
         this.state = {
             searchObjects: [],
-            feedbackMessage: null
+            feedbackMessage: null,
+            apiError: false
         };
 
         this.refresh = this.refresh.bind(this);
@@ -26,7 +27,7 @@ class Sync extends React.Component {
 
     refresh() {
         // This outer fetch gets a list of connections on the form
-        // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
+        // { canvas_group: <id>, te_group: <id>, delete_flag: <bool>, te_type: <extid> }
         fetch(
             urlParams(window.injectedEnv.API_URL, "/api/connection", {
                 // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
@@ -34,10 +35,12 @@ class Sync extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status !== 200)
+                if (resp.status !== 200) {
+                    this.setState({ apiError: true });
                     throw new Error(
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
+                }
                 return resp.json();
             })
             .then(connections => {
@@ -85,10 +88,15 @@ class Sync extends React.Component {
             })
             .then(searchObjects => {
                 this.setState({
-                    searchObjects: searchObjects
+                    searchObjects: searchObjects,
+                    apiError: false
                 });
             })
-            .catch(e => console.error(e)); // (2)
+            .catch(e => {
+                console.error(e);
+                this.setState({ apiError: true });
+                setTimeout(() => this.refresh(), 5000);
+            }); // (2)
     }
 
     feedback(message) {
@@ -105,15 +113,20 @@ class Sync extends React.Component {
                     feedback: this.feedback
                 }}
             >
-                <div id="sync">
-                    <SyncStatus connections={this.state.searchObjects.length} />
-                    <SearchObjects
-                        refresh={this.refresh}
-                        searchObjects={this.state.searchObjects}
-                    />
-                    <AddNew />
-                    <Feedback message={this.state.feedbackMessage} />
-                </div>
+                {this.state.apiError && <Spinner />}
+                {!this.state.apiError && this.state.searchObjects.length > 0 && (
+                    <div id="sync">
+                        <SyncStatus
+                            connections={this.state.searchObjects.length}
+                        />
+                        <SearchObjects
+                            refresh={this.refresh}
+                            searchObjects={this.state.searchObjects}
+                        />
+                        <AddNew />
+                        <Feedback message={this.state.feedbackMessage} />
+                    </div>
+                )}
             </MyContext.Provider>
         );
     }
