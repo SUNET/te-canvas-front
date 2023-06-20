@@ -22,6 +22,7 @@ class Sync extends React.Component {
     }
 
     componentDidMount() {
+        if (this.props.apiError) return;
         this.refresh();
     }
 

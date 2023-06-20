@@ -55,13 +55,19 @@ class App extends React.Component {
                             renderTitle="Course Event Template"
                             isSelected={this.state.activeTab === 1}
                         >
-                            <Config default={false} />
+                            <Config
+                                default={false}
+                                apiError={this.state.apiError}
+                            />
                         </Tabs.Panel>
                         <Tabs.Panel
                             renderTitle="Default Event Template"
                             isSelected={this.state.activeTab === 2}
                         >
-                            <Config default={true} />
+                            <Config
+                                default={true}
+                                apiError={this.state.apiError}
+                            />
                         </Tabs.Panel>
                         <Tabs.Panel
                             renderTitle="TimeEdit Type Filter"

@@ -1,5 +1,7 @@
 import React from "react";
 
+import { Spinner } from "@instructure/ui";
+
 import { urlParams } from "../../util";
 import Feedback from "../Feedback";
 import ConfigSection from "./ConfigSection";
@@ -8,11 +10,7 @@ class Config extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            template: {
-                title: [],
-                location: [],
-                description: []
-            },
+            template: null,
             isAdmin: true
         };
         this.handleDelete = this.handleDelete.bind(this);
@@ -20,6 +18,7 @@ class Config extends React.Component {
     }
 
     componentDidMount() {
+        if (this.props.apiError) return;
         this.refresh();
     }
 
@@ -32,22 +31,23 @@ class Config extends React.Component {
             })
         )
             .then(resp => {
+                if (resp.status === 200) return resp.json();
                 if (resp.status === 403) {
                     this.setState({ isAdmin: false });
                     throw new Error(
                         "User is unauthorized to change default template"
                     );
                 }
-                if (resp.status !== 200 && resp.status !== 403)
-                    throw new Error(
-                        `Unexpected HTTP response from backend: ${resp.status}`
-                    );
-                return resp.json();
+                throw new Error(
+                    `Unexpected HTTP response from backend: ${resp.status}`
+                );
             })
             .then(data => this.setState({ template: data }))
             .catch(e => {
                 console.error(e);
-                this.state.isAdmin && setTimeout(() => this.refresh(), 2000);
+                if (this.state.isAdmin && !this.props.apiError) {
+                    setTimeout(() => this.refresh(), 5000);
+                }
             });
     }
 
@@ -104,27 +104,33 @@ class Config extends React.Component {
                 </p>
                 {this.state.isAdmin ? (
                     <>
-                        <ConfigSection
-                            config_type="title"
-                            default={this.props.default}
-                            children={this.state.template.title}
-                            onDelete={this.handleDelete}
-                            onSubmit={this.refresh}
-                        />
-                        <ConfigSection
-                            config_type="location"
-                            default={this.props.default}
-                            children={this.state.template.location}
-                            onDelete={this.handleDelete}
-                            onSubmit={this.refresh}
-                        />
-                        <ConfigSection
-                            config_type="description"
-                            default={this.props.default}
-                            children={this.state.template.description}
-                            onDelete={this.handleDelete}
-                            onSubmit={this.refresh}
-                        />
+                        {this.props.apiError || !this.state.template ? (
+                            <Spinner />
+                        ) : (
+                            <>
+                                <ConfigSection
+                                    config_type="title"
+                                    default={this.props.default}
+                                    children={this.state.template.title}
+                                    onDelete={this.handleDelete}
+                                    onSubmit={this.refresh}
+                                />
+                                <ConfigSection
+                                    config_type="location"
+                                    default={this.props.default}
+                                    children={this.state.template.location}
+                                    onDelete={this.handleDelete}
+                                    onSubmit={this.refresh}
+                                />
+                                <ConfigSection
+                                    config_type="description"
+                                    default={this.props.default}
+                                    children={this.state.template.description}
+                                    onDelete={this.handleDelete}
+                                    onSubmit={this.refresh}
+                                />
+                            </>
+                        )}
                     </>
                 ) : (
                     <Feedback
