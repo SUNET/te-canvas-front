@@ -13,7 +13,10 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            activeTab: 0
+            activeTab: 0,
+            groupError: null,
+            defaultError: null,
+            apiError: false
         };
         this.handleTabChange = this.handleTabChange.bind(this);
     }
@@ -92,23 +95,27 @@ class TemplateStatusFeedback extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status !== 200)
+                if (resp.status === 500) this.setState({ apiError: true });
+                if (resp.status !== 200) {
                     throw new Error(
                         `Unexpected HTTP response from /api/config/ok: ${resp.status}`
                     );
+                }
                 return resp.json();
             })
             .then(status => {
                 if (status.group.length < 3 && !this.state.groupError)
-                    this.setState({ groupError: true });
+                    this.setState({ groupError: true, apiError: false });
                 if (status.group.length === 3 && this.state.groupError)
-                    this.setState({ groupError: false });
+                    this.setState({ groupError: false, apiError: false });
                 if (status.default.length < 3 && !this.state.defaultError)
-                    this.setState({ defaultError: true });
+                    this.setState({ defaultError: true, apiError: false });
                 if (status.default.length === 3 && this.state.defaultError)
-                    this.setState({ defaultError: false });
+                    this.setState({ defaultError: false, apiError: false });
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+            });
     }
 
     render() {
@@ -126,6 +133,13 @@ class TemplateStatusFeedback extends React.Component {
                         close
                         variant="info"
                         message="No valid Event Template for course, using default configuration."
+                    />
+                )}
+                {this.state.apiError && (
+                    <Feedback
+                        close
+                        variant="error"
+                        message="Error getting Event Template status from API"
                     />
                 )}
             </>
