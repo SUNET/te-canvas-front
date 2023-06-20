@@ -73,7 +73,9 @@ class App extends React.Component {
                             renderTitle="TimeEdit Type Filter"
                             isSelected={this.state.activeTab === 3}
                         >
-                            <TimeeditTypeFilter />
+                            <TimeeditTypeFilter
+                                apiError={this.state.apiError}
+                            />
                         </Tabs.Panel>
                     </Tabs>
                 </div>
