@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Button, SimpleSelect, View } from "@instructure/ui";
+import { Button, SimpleSelect, Spinner, View } from "@instructure/ui";
 import { IconPlusLine, IconTrashLine } from "@instructure/ui-icons";
 
-import { MyContext, createField, parseResponse, urlParams } from "../util";
+import { MyContext, createField, urlParams } from "../util";
 import AsyncSelect from "./AsyncSelect";
 import Feedback from "./Feedback";
 import SyncStatus from "./SyncStatus";
@@ -12,8 +12,9 @@ class Sync extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            searchObjects: [],
-            feedbackMessage: null
+            searchObjects: null,
+            feedbackMessage: null,
+            apiErrorConnection: false
         };
 
         this.refresh = this.refresh.bind(this);
@@ -21,12 +22,13 @@ class Sync extends React.Component {
     }
 
     componentDidMount() {
+        if (this.props.apiError) return;
         this.refresh();
     }
 
     refresh() {
         // This outer fetch gets a list of connections on the form
-        // { canvas_group: <id>, te_group: <id>, delete_flag: <bool> }
+        // { canvas_group: <id>, te_group: <id>, delete_flag: <bool>, te_type: <extid> }
         fetch(
             urlParams(window.injectedEnv.API_URL, "/api/connection", {
                 // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
@@ -34,10 +36,12 @@ class Sync extends React.Component {
             })
         )
             .then(resp => {
-                if (resp.status !== 200)
+                if (resp.status !== 200) {
+                    this.setState({ apiErrorConnection: true });
                     throw new Error(
                         `Unexpected HTTP response from backend: ${resp.status}`
                     );
+                }
                 return resp.json();
             })
             .then(connections => {
@@ -85,10 +89,16 @@ class Sync extends React.Component {
             })
             .then(searchObjects => {
                 this.setState({
-                    searchObjects: searchObjects
+                    searchObjects: searchObjects,
+                    apiErrorConnection: false
                 });
             })
-            .catch(e => console.error(e)); // (2)
+            .catch(e => {
+                console.error(e);
+                this.setState({ apiErrorConnection: true });
+                if (!this.props.apiError)
+                    setTimeout(() => this.refresh(), 5000);
+            }); // (2)
     }
 
     feedback(message) {
@@ -105,15 +115,30 @@ class Sync extends React.Component {
                     feedback: this.feedback
                 }}
             >
-                <div id="sync">
-                    <SyncStatus connections={this.state.searchObjects.length} />
-                    <SearchObjects
-                        refresh={this.refresh}
-                        searchObjects={this.state.searchObjects}
-                    />
-                    <AddNew />
-                    <Feedback message={this.state.feedbackMessage} />
-                </div>
+                <Feedback message={this.state.feedbackMessage} />
+                {this.props.apiError ? (
+                    <Spinner />
+                ) : (
+                    <>
+                        {this.state.apiErrorConnection ||
+                        !this.state.searchObjects ? (
+                            <Spinner />
+                        ) : (
+                            <div id="sync">
+                                <SyncStatus
+                                    connections={
+                                        this.state.searchObjects.length
+                                    }
+                                />
+                                <SearchObjects
+                                    refresh={this.refresh}
+                                    searchObjects={this.state.searchObjects}
+                                />
+                                <AddNew />
+                            </div>
+                        )}
+                    </>
+                )}
             </MyContext.Provider>
         );
     }
@@ -159,7 +184,13 @@ class SearchObject extends React.Component {
                     );
                 this.context.refresh();
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                this.context.feedback(
+                    "Unable to delete Sync Object %s",
+                    te_group
+                );
+            });
     }
 
     render() {
@@ -231,34 +262,55 @@ class AddNewForm extends React.Component {
         this.state = {
             type: null,
             types: [],
-            object: null
+            object: null,
+            apiErrorType: false
         };
         this.handleSelect = this.handleSelect.bind(this);
         this.submit = this.submit.bind(this);
         this.setObject = this.setObject.bind(this);
+        this.getTypes = this.getTypes.bind(this);
     }
 
     static contextType = MyContext;
 
-    componentDidMount() {
-        let promise = fetch(
+    getTypes() {
+        fetch(
             urlParams(window.injectedEnv.API_URL, "/api/timeedit/types", {
                 whitelisted: "true"
             })
-        );
-        parseResponse(promise, json => {
-            this.setState({
-                types: Object.entries(json).map(([k, v]) => ({
-                    extid: k,
-                    title: v
-                })),
-                // If the types include "courseevt" we set this as active.
-                // Otherwise just pick the first type.
-                type: Object.keys(json).some(x => x === "courseevt")
-                    ? "courseevt"
-                    : Object.keys(json)[0]
+        )
+            .then(resp => {
+                if (resp.status !== 200) {
+                    this.setState({ apiErrorType: true });
+                    throw new Error(
+                        `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
+                    );
+                }
+                return resp.json();
+            })
+            .then(json => {
+                this.setState({
+                    types: Object.entries(json).map(([k, v]) => ({
+                        extid: k,
+                        title: v
+                    })),
+                    // If the types include "courseevt" we set this as active.
+                    // Otherwise just pick the first type.
+                    type: Object.keys(json).some(x => x === "courseevt")
+                        ? "courseevt"
+                        : Object.keys(json)[0],
+                    apiErrorType: false
+                });
+            })
+            .catch(e => {
+                console.error(e);
+                if (!this.props.apiError)
+                    setTimeout(() => this.getTypes(), 5000);
             });
-        });
+    }
+
+    componentDidMount() {
+        this.getTypes();
     }
 
     handleSelect(key) {
@@ -268,6 +320,12 @@ class AddNewForm extends React.Component {
     }
 
     submit() {
+        if (!this.state.object || !this.state.type) {
+            this.context.feedback(
+                "We need both object and type to add a connection"
+            );
+            return;
+        }
         fetch(
             urlParams(window.injectedEnv.API_URL, "/api/connection", {
                 te_group: this.state.object,
@@ -300,7 +358,10 @@ class AddNewForm extends React.Component {
                         );
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                this.context.feedback("Error adding Sync Object connection");
+                console.error(e);
+            });
     }
 
     setObject(object) {
@@ -311,40 +372,46 @@ class AddNewForm extends React.Component {
 
     render() {
         return (
-            <View
-                display="block"
-                borderRadius="medium"
-                borderWidth="small"
-                background="secondary"
-                padding="medium"
-                margin="small"
-            >
-                <SimpleSelect
-                    renderLabel="Object Type"
-                    value={this.state.type}
-                    onChange={this.handleSelect("type")}
-                >
-                    {this.state.types.map(t => (
-                        <SimpleSelect.Option
-                            key={t.extid}
-                            id={t.extid}
-                            value={t.extid}
+            <>
+                {!this.state.apiErrorType ? (
+                    <View
+                        display="block"
+                        borderRadius="medium"
+                        borderWidth="small"
+                        background="secondary"
+                        padding="medium"
+                        margin="small"
+                    >
+                        <SimpleSelect
+                            renderLabel="Object Type"
+                            value={this.state.type}
+                            onChange={this.handleSelect("type")}
                         >
-                            {t.title}
-                        </SimpleSelect.Option>
-                    ))}
-                </SimpleSelect>
-                <br />
-                <AsyncSelect
-                    type={this.state.type}
-                    setObject={this.setObject}
-                />
-                <br />
-                <Button onClick={this.submit}>Submit</Button>{" "}
-                <Button onClick={() => this.props.setActive(false)}>
-                    Cancel
-                </Button>
-            </View>
+                            {this.state.types.map(t => (
+                                <SimpleSelect.Option
+                                    key={t.extid}
+                                    id={t.extid}
+                                    value={t.extid}
+                                >
+                                    {t.title}
+                                </SimpleSelect.Option>
+                            ))}
+                        </SimpleSelect>
+                        <br />
+                        <AsyncSelect
+                            type={this.state.type}
+                            setObject={this.setObject}
+                        />
+                        <br />
+                        <Button onClick={this.submit}>Submit</Button>{" "}
+                        <Button onClick={() => this.props.setActive(false)}>
+                            Cancel
+                        </Button>
+                    </View>
+                ) : (
+                    <Spinner />
+                )}
+            </>
         );
     }
 }

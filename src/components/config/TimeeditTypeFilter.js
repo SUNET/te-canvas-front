@@ -18,6 +18,7 @@ class TimeeditTypeFilter extends React.Component {
     }
 
     componentDidMount() {
+        if (this.props.apiError) return;
         this.refresh();
     }
 
@@ -45,18 +46,15 @@ class TimeeditTypeFilter extends React.Component {
             .then(data => this.setState({ whitelist: data }))
             .catch(e => {
                 console.error(e);
-                this.state.isAdmin && setTimeout(() => this.refresh(), 2000);
+                if (this.state.isAdmin && !this.props.apiError)
+                    setTimeout(() => this.refresh(), 5000);
             });
         fetch(urlParams(window.injectedEnv.API_URL, "/api/timeedit/types", {}))
             .then(resp => {
-                if (resp.status !== 200) {
-                    setTimeout(() => this.refresh(), 3000);
-                    throw new Error(
-                        "Something went wrong fetching timeedit types."
-                    );
-                } else {
-                    return resp.json();
-                }
+                if (resp.status === 200) return resp.json();
+                throw new Error(
+                    "Something went wrong fetching timeedit types."
+                );
             })
             .then(json => {
                 this.setState({
@@ -66,7 +64,11 @@ class TimeeditTypeFilter extends React.Component {
                     }))
                 });
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                console.error(e);
+                if (this.state.isAdmin && !this.props.apiError)
+                    setTimeout(() => this.refresh(), 5000);
+            });
     }
 
     handleToggle({ target }) {
@@ -134,7 +136,9 @@ class TimeeditTypeFilter extends React.Component {
                             This is a filter of which TimeEdit types to show
                             when adding Sync Objects.
                         </p>
-                        {this.state.types && this.state.whitelist ? (
+                        {this.state.types &&
+                        this.state.whitelist &&
+                        !this.props.apiError ? (
                             <FormFieldGroup>
                                 {this.state.types?.map(t => (
                                     <Checkbox

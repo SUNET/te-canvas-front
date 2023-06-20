@@ -107,7 +107,10 @@ lti.app.all("/api/*", function (req, res, next) {
             });
         }
     );
-    req.on("error", e => console.error(`Error from API server: ${e}`));
+    req.on("error", e => {
+        console.error(`Error from API server: ${e}`);
+        res.status(500).end();
+    });
     req.end();
 });
 
