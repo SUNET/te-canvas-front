@@ -69,6 +69,17 @@ lti.onConnect((token, req, res, next) => {
 // access to the backend, so we can't just return a 301 redirect.
 lti.app.all("/api/*", function (req, res, next) {
     let extras = platformExtras.get(res.locals.token.platformId);
+
+    console.log("=========== lti.app.all ===========")
+    console.log(extras)
+    console.log("extras.authorized_roles")
+    console.log(extras.authorized_roles)
+    console.log("res.locals.context.roles")
+    console.log(res.locals.context.roles)
+    console.log(checkRoles(extras.authorized_roles, res.locals.context.roles))
+
+    console.log("**********************************")
+    
     if (extras === undefined) {
         res.sendStatus(500);
         return;
