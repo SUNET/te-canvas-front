@@ -99,7 +99,7 @@ docker-compose up
 
 ## `platforms.json`
 
-This file contains information about each Canvas instance (platform). This is not a file format specified by the ltijs library, though many of the keys are passed directly to [Provider.registerPlatform](https://cvmcosta.me/ltijs/#/provider?id=async-providerregisterplatformplatform).
+This file contains information about each Canvas instance (platform). This is not a file format specified by the ltijs library, though many of the keys are passed directly to [Provider.registerPlatform](https://cvmcosta.me/ltijs/#/provider?id=async-providerregisterplatformplatform). 
 
 ```
 [
