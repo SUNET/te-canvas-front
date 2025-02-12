@@ -27,6 +27,12 @@ export function urlParams(baseUrl, path, params) {
     let url = new URL(path, baseUrl);
     if (window.injectedEnv.NO_LTI !== "1") params.ltik = getLtik();
     url.search = new URLSearchParams(params);
+    console.log("====================== [urlParams] =======================")
+    console.log(baseUrl)
+    console.log(path)
+    console.log(params)
+    console.log(params.ltik)
+    console.log("====================== END =======================")
     return url;
 }
 
