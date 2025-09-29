@@ -32,10 +32,11 @@ export function urlParams(baseUrl, path, params, { skipLtik = false } = {}) {
 
     url.search = new URLSearchParams(params);
     console.log("====================== [urlParams] =======================")
-    console.log(baseUrl)
-    console.log(path)
-    console.log(params)
-    console.log(params.ltik)
+    console.log(`baseUrl: ${baseUrl}`);
+    console.log(`path: ${path}`);
+    console.log(`params: ${JSON.stringify(params)}`);
+    console.log(`params.ltik: ${params.ltik}`);
+    console.log(`skipLtik: ${skipLtik}`);
     console.log("====================== END =======================")
     return url;
 }
