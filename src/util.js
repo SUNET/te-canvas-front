@@ -26,9 +26,9 @@ export function getLtik() {
 export function urlParams(baseUrl, path, params, { skipLtik = false } = {}) {
     const url = new URL(path, baseUrl);
 
-    if (!skipLtik && window.injectedEnv.NO_LTI !== "1") {
-        params.ltik = getLtik();
-    }
+    // if (!skipLtik && window.injectedEnv.NO_LTI !== "1") {
+    //     params.ltik = getLtik();
+    // }
 
     url.search = new URLSearchParams(params);
     console.log("====================== [urlParams] =======================")
