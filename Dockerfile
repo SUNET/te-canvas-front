@@ -1,7 +1,7 @@
 # Build: React app
 # Run: Inject env vars and start Express server
 
-FROM node
+FROM node:16
 
 WORKDIR /usr/src/app
 
