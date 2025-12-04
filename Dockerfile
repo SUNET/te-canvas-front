@@ -1,7 +1,8 @@
 # Build: React app
 # Run: Inject env vars and start Express server
 
-FROM node:16
+FROM node:16.18-alpine
+# docker pull node:18.16-alpine
 
 WORKDIR /usr/src/app
 
