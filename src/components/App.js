@@ -109,7 +109,7 @@ class TemplateStatusFeedback extends React.Component {
             urlParams(window.injectedEnv.API_URL, "/api/config/ok", {
                 // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
                 canvas_group: "LTI_CUSTOM_PROPERTY"
-            }, { skipLtik: true })
+            })
         )
             .then(resp => {
                 if (resp.status === 500 && !this.props.apiError)

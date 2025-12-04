@@ -23,12 +23,12 @@ export function getLtik() {
 }
 
 // Create an URL from baseUrl and path, appending LTI JWT and params as query string
-export function urlParams(baseUrl, path, params, { skipLtik = false } = {}) {
+export function urlParams(baseUrl, path, params, { addLtik = true } = {}) {
     const url = new URL(path, baseUrl);
 
-    // if (!skipLtik && window.injectedEnv.NO_LTI !== "1") {
-    //     params.ltik = getLtik();
-    // }
+    if (addLtik && window.injectedEnv.NO_LTI !== "1") {
+        params.ltik = getLtik();
+    }
 
     url.search = new URLSearchParams(params);
     console.log("====================== [urlParams] =======================")
@@ -36,7 +36,7 @@ export function urlParams(baseUrl, path, params, { skipLtik = false } = {}) {
     console.log(`path: ${path}`);
     console.log(`params: ${JSON.stringify(params)}`);
     console.log(`params.ltik: ${params.ltik}`);
-    console.log(`skipLtik: ${skipLtik}`);
+    console.log(`addLtik: ${addLtik}`);
     console.log("====================== END =======================")
     return url;
 }

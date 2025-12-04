@@ -33,7 +33,7 @@ class Sync extends React.Component {
             urlParams(window.injectedEnv.API_URL, "/api/connection", {
                 // MAGIC STRING ALERT: Is replaced on serverside with actual canvas_group.
                 canvas_group: "LTI_CUSTOM_PROPERTY"
-            }, { skipLtik: true })
+            })
         )
             .then(resp => {
                 if (resp.status !== 200) {
