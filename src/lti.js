@@ -4,6 +4,7 @@ let http = require("http");
 
 let lti = require("ltijs").Provider;
 
+const isProd = process.env.NODE_ENV === "production";
 // Map holding platform information we store in a JSON file, keyed on platform
 // ID created (randomly) by ltijs on platform registration.
 let platformExtras = new Map();

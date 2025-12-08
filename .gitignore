@@ -7,3 +7,7 @@ ssl.key
 platforms.json
 .env
 .vscode
+LOCAL_TEST_GUIDE.md
+local_test.js
+Dockerfile.test
+docker-compose.test.yml

@@ -72,6 +72,12 @@ class AsyncSelect extends React.Component {
         return label.join(" - ");
     }
 
+    createLabel(te_object, maxLength = 100) {
+        // Collect all values from the object
+        const label = Object.values(te_object).filter(v => v != null && v !== "").join(" - ");
+        return label.length > maxLength ? label.slice(0, maxLength) + "..." : label;
+    }
+
     getOptionById(queryId) {
         return this.state.options.find(({ id }) => id === queryId);
     }
