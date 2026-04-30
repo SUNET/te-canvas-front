@@ -24,3 +24,36 @@ h2 {
 #config textarea {
     font-family: monospace;
 }
+
+/* --------------------------------------------------------------------------
+ * Brand header — driven entirely by Canvas brand_variables CSS custom
+ * properties set on :root by src/brandTheme.js. Fallback colors apply
+ * before the fetch resolves.
+ * -------------------------------------------------------------------------- */
+.brand-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem;
+    background: var(--ic-brand-global-nav-bgd, #2d3b45);
+    color: var(--ic-brand-global-nav-menu-item__text-color, #ffffff);
+    border-bottom: 4px solid var(--ic-brand-primary, #0374b5);
+}
+
+.brand-header__logo {
+    height: 40px;
+    width: auto;
+    background: transparent;
+}
+
+.brand-header__title {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+/* Apply brand link color to plain anchors inside the app */
+#main a,
+#main a:visited {
+    color: var(--ic-link-color, #0374b5);
+}

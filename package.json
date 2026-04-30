@@ -6,11 +6,13 @@
         "start": "NODE_ENV=production API_URL=$LTI_URL ./make-inject-env.sh && DEBUG=provider:* node src/lti.js",
         "build": "NODE_ENV=production parcel build --no-scope-hoist --no-optimize --no-content-hash src/index.html",
         "start-parcel": "NODE_ENV=development NO_LTI=1 ./make-inject-env.sh && parcel --port 8000 src/index.html",
-        "dev": "NODE_ENV=development NO_LTI=1 API_URL=$LTI_URL ./make-inject-env.sh && parcel --port 8000 src/index.html"
+        "dev": "NODE_ENV=development NO_LTI=1 API_URL=$LTI_URL ./make-inject-env.sh && parcel --port 8000 src/index.html",
+        "dev:lti": "NODE_ENV=development NO_LTI=1 API_URL=$LTI_URL ./make-inject-env.sh && npm run build && DEBUG=provider:* node src/lti.js"
     },
     "browserslist": "defaults",
     "parcelIgnore": [
-        "inject.js"
+        "inject.js",
+        "react-dom/client"
     ],
     "keywords": [],
     "author": "",

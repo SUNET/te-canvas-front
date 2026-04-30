@@ -2,6 +2,11 @@ import React from "react";
 
 import { Heading, InstUISettingsProvider, Tabs, canvas } from "@instructure/ui";
 
+import {
+    applyBrandCssVariables,
+    buildCanvasTheme,
+    loadBrandVariables
+} from "../brandTheme";
 import "../style.css";
 import { urlParams } from "../util";
 import Feedback from "./Feedback";
@@ -16,10 +21,20 @@ class App extends React.Component {
             activeTab: 0,
             groupError: null,
             defaultError: null,
-            apiError: false
+            apiError: false,
+            theme: canvas,
+            brand: null
         };
         this.handleTabChange = this.handleTabChange.bind(this);
         this.setApiError = this.setApiError.bind(this);
+    }
+
+    async componentDidMount() {
+        const brand = await loadBrandVariables();
+        if (brand) {
+            applyBrandCssVariables(brand);
+            this.setState({ theme: buildCanvasTheme(brand), brand });
+        }
     }
 
     handleTabChange(_, { index }) {
@@ -33,10 +48,58 @@ class App extends React.Component {
     }
 
     render() {
+        const { brand } = this.state;
+        const primary = brand && brand["ic-brand-primary"];
+        const navBgd = brand && brand["ic-brand-global-nav-bgd"];
+        const navText =
+            brand && brand["ic-brand-global-nav-menu-item__text-color"];
+        const headerImage = brand && brand["ic-brand-header-image"];
+
+        // Force the InstUI <Heading> to take the brand color via the
+        // per-component themeOverride prop (works without rebuilding the
+        // entire canvas theme).
+        const headingThemeOverride = primary
+            ? {
+                  h1FontColor: primary,
+                  h2FontColor: primary,
+                  borderColor: primary
+              }
+            : {};
+
         return (
-            <InstUISettingsProvider theme={canvas}>
+            <InstUISettingsProvider theme={this.state.theme}>
+                {/* Branded top bar: proves the brand vars are loaded. */}
+                <div
+                    className="brand-header"
+                    style={{
+                        background: navBgd || "#222",
+                        color: navText || "#fff"
+                    }}
+                >
+                    {headerImage && (
+                        <img
+                            className="brand-header__logo"
+                            src={headerImage}
+                            alt=""
+                            referrerPolicy="no-referrer"
+                            onError={e => {
+                                console.warn(
+                                    "brand header image failed to load:",
+                                    headerImage
+                                );
+                                e.currentTarget.style.display = "none";
+                            }}
+                        />
+                    )}
+                </div>
+
                 <div id="main">
-                    <Heading border="bottom">TimeEdit Sync</Heading>
+                    <Heading
+                        border="bottom"
+                        themeOverride={headingThemeOverride}
+                    >
+                        TimeEdit Sync
+                    </Heading>
                     <TemplateStatusFeedback
                         apiError={this.state.apiError}
                         setApiError={this.setApiError}
