@@ -60,7 +60,8 @@ class Sync extends React.Component {
                                 window.injectedEnv.API_URL,
                                 "/api/timeedit/object",
                                 {
-                                    extid: c.te_group
+                                    extid: c.te_group,
+                                    type: c.te_type
                                 }
                             )
                         )
@@ -69,13 +70,16 @@ class Sync extends React.Component {
                                     throw new Error(
                                         `Unexpected HTTP response from backend: ${resp.status} ${resp.statusText}`
                                     );
+
+                                console.log(`Fetched details for TE object with extid ${c.te_group} and type ${c.te_type}:`);
+                                console.log(resp);
                                 return resp.json();
                             })
                             .then(data => ({
                                 extid: data.extid,
                                 type: c.te_type, // TODO: Convert this to a type name using /api/timeedit/types
-                                id: createField(data, "id"),
-                                title: createField(data, "title")
+                                id: data.id ?? createField(data, "id"),
+                                title: data.title ?? createField(data, "title")
                             }))
                             .catch(e => {
                                 // This will lead Promise.all to also reject at
@@ -88,6 +92,7 @@ class Sync extends React.Component {
                 return Promise.all(promises); // (1)
             })
             .then(searchObjects => {
+                console.log("SearchObjects-------------------:>", searchObjects);
                 this.setState({
                     searchObjects: searchObjects,
                     apiErrorConnection: false
@@ -146,6 +151,7 @@ class Sync extends React.Component {
 
 class SearchObjects extends React.Component {
     render() {
+        console.log("SearchObjects props:", this.props.searchObjects);
         return (
             <>
                 {Object.entries(this.props.searchObjects).map(([k, v]) => (

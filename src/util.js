@@ -31,23 +31,30 @@ export function urlParams(baseUrl, path, params, { addLtik = true } = {}) {
     }
 
     url.search = new URLSearchParams(params);
-    console.log("====================== [urlParams] =======================")
+    console.log("====================== [urlParams] =======================");
     console.log(`baseUrl: ${baseUrl}`);
     console.log(`path: ${path}`);
     console.log(`params: ${JSON.stringify(params)}`);
     console.log(`params.ltik: ${params.ltik}`);
     console.log(`addLtik: ${addLtik}`);
-    console.log("====================== END =======================")
+    console.log("====================== END =======================");
     return url;
 }
 
 export let MyContext = React.createContext();
 
 /**
- * This function is needed since RKH use _ref suffix for id and title.
- * TODO: solve this backend
+ * Resolves an object's id or title field.
+ *
+ * The backend now normalizes TimeEdit objects with top-level `id` and `title`
+ * keys (see TimeEdit._unpack_object). This helper prefers those, then falls
+ * back to the legacy `general.<type>` / `general.<type>_ref` keys for safety
+ * with older payloads.
  */
 export function createField(objectToCreateFrom, type) {
+    if (objectToCreateFrom?.[type] != null && objectToCreateFrom[type] !== "") {
+        return objectToCreateFrom[type];
+    }
     let fieldToReturn = "";
     if (objectToCreateFrom.hasOwnProperty("general." + type)) {
         fieldToReturn = objectToCreateFrom["general." + type];

@@ -4,10 +4,6 @@ import { Select, Spinner } from "@instructure/ui";
 
 import { parseResponse, urlParams } from "../util";
 
-// TODO: Refactor to solve this in backend.
-const TE_ID_FIELDS = ["general.id", "general.id_ref"];
-const TE_TITLE_FIELDS = ["general.title", "general.title_ref"];
-
 let initState = {
     inputValue: "",
     isShowingOptions: false,
@@ -53,6 +49,8 @@ class AsyncSelect extends React.Component {
                 })
             ),
             json => {
+                console.log("All objects:");
+                console.log(json);
                 this.setState({
                     options: json.map(te_object => ({
                         id: te_object.extid,
@@ -64,18 +62,18 @@ class AsyncSelect extends React.Component {
         );
     }
 
-    createLabel(te_object) {
-        const label = [];
-        for (const field of TE_ID_FIELDS.concat(TE_TITLE_FIELDS)) {
-            if (te_object.hasOwnProperty(field)) label.push(te_object[field]);
-        }
-        return label.join(" - ");
-    }
-
     createLabel(te_object, maxLength = 100) {
-        // Collect all values from the object
-        const label = Object.values(te_object).filter(v => v != null && v !== "").join(" - ");
-        return label.length > maxLength ? label.slice(0, maxLength) + "..." : label;
+        console.log("Creating label for object:");
+        console.log(te_object);
+        // Backend normalizes objects with top-level `id` and `title`.
+        // Fall back to extid if neither is populated.
+        const parts = [te_object.id, te_object.title].filter(
+            v => v != null && v !== ""
+        );
+        const label = parts.length ? parts.join(" - ") : te_object.extid;
+        return label.length > maxLength
+            ? label.slice(0, maxLength) + "..."
+            : label;
     }
 
     getOptionById(queryId) {

@@ -190,7 +190,10 @@ if (DEV_MODE) {
         if (hasDev && (!res.locals.token || !res.locals.token.platformId)) {
             res.locals.token = { platformId: DEV_PLATFORM_ID };
             res.locals.context = {
-                roles: ["dev"],
+                roles: [
+                    "dev",
+                    "http://purl.imsglobal.org/vocab/lis/v2/institution/person#Administrator"
+                ],
                 custom: {
                     canvas_group:
                         process.env.DEV_CANVAS_GROUP ||
@@ -242,11 +245,11 @@ lti.onConnect((token, req, res, next) => {
         res.set("Content-Type", "text/plain");
         res.status(401).send(
             "Unauthorized\n" +
-                "Wanted: " +
-                extras.authorized_roles +
-                "\n" +
-                "Received: " +
-                res.locals.context.roles
+            "Wanted: " +
+            extras.authorized_roles +
+            "\n" +
+            "Received: " +
+            res.locals.context.roles
         );
         return;
     }

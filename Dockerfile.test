@@ -1,0 +1,21 @@
+# Build: React app
+# Run: Inject env vars and start LTI Express server in dev mode
+#   - NODE_ENV=development triggers /dev-launch fake LTI session
+#   - NO_LTI=1 in inject.js makes the React frontend skip ltik
+
+FROM node:20.19.6
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=development
+COPY package*.json ./
+RUN npm install
+
+COPY inject_template.js make-inject-env.sh ./
+RUN apt update && apt install -y gettext
+
+COPY src ./src/
+COPY .parcelrc ./
+RUN npm run build
+
+CMD npm run dev:lti

@@ -19,7 +19,25 @@ class Config extends React.Component {
 
     componentDidMount() {
         if (this.props.apiError) return;
+        this.checkAdmin();
         this.refresh();
+    }
+
+    // Probe an admin-only endpoint to determine whether the current user is a
+    // Canvas administrator. /api/config/whitelist-types returns 403 for
+    // non-admins, 200 for admins.
+    checkAdmin() {
+        fetch(
+            urlParams(
+                window.injectedEnv.API_URL,
+                "/api/config/whitelist-types",
+                {}
+            )
+        )
+            .then(resp => {
+                this.setState({ isAdmin: resp.status === 200 });
+            })
+            .catch(() => this.setState({ isAdmin: false }));
     }
 
     refresh() {
@@ -102,41 +120,41 @@ class Config extends React.Component {
                     Event template control what content the title, location and
                     description fields in canvas events will have.
                 </p>
-                {this.state.isAdmin ? (
-                    <>
-                        {this.props.apiError || !this.state.template ? (
-                            <Spinner />
-                        ) : (
-                            <>
-                                <ConfigSection
-                                    config_type="title"
-                                    default={this.props.default}
-                                    children={this.state.template.title}
-                                    onDelete={this.handleDelete}
-                                    onSubmit={this.refresh}
-                                />
-                                <ConfigSection
-                                    config_type="location"
-                                    default={this.props.default}
-                                    children={this.state.template.location}
-                                    onDelete={this.handleDelete}
-                                    onSubmit={this.refresh}
-                                />
-                                <ConfigSection
-                                    config_type="description"
-                                    default={this.props.default}
-                                    children={this.state.template.description}
-                                    onDelete={this.handleDelete}
-                                    onSubmit={this.refresh}
-                                />
-                            </>
-                        )}
-                    </>
-                ) : (
+                {!this.state.isAdmin && (
                     <Feedback
                         variant="error"
                         message="You must be a Canvas administrator to change default config."
                     />
+                )}
+                {this.props.apiError || !this.state.template ? (
+                    <Spinner />
+                ) : (
+                    <>
+                        <ConfigSection
+                            config_type="title"
+                            default={this.props.default}
+                            children={this.state.template.title}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                            readOnly={!this.state.isAdmin}
+                        />
+                        <ConfigSection
+                            config_type="location"
+                            default={this.props.default}
+                            children={this.state.template.location}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                            readOnly={!this.state.isAdmin}
+                        />
+                        <ConfigSection
+                            config_type="description"
+                            default={this.props.default}
+                            children={this.state.template.description}
+                            onDelete={this.handleDelete}
+                            onSubmit={this.refresh}
+                            readOnly={!this.state.isAdmin}
+                        />
+                    </>
                 )}
             </>
         );

@@ -222,7 +222,7 @@ class TemplateStatusFeedback extends React.Component {
                             <Feedback
                                 close
                                 variant="info"
-                                message="No valid Event Template for course, using default Event Template."
+                                message="Using default event template. To customize for this course, setup a course event template."
                             />
                         )}
                     </>

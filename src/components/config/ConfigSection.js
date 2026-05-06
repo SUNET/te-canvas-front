@@ -79,28 +79,31 @@ class ConfigSection extends React.Component {
                     {this.props.config_type.slice(1)}
                 </Heading>
                 <div>
-                    {!this.state.addNew && this.props.children.length < 3 && (
-                        <Button
-                            renderIcon={IconPlusLine}
-                            margin="small"
-                            color="primary"
-                            onClick={() =>
-                                this.setState({
-                                    addNew: true
-                                })
-                            }
-                        >
-                            Add {this.props.config_type} field
-                        </Button>
-                    )}
-                    {this.props.children.length >= 3 && (
-                        <Feedback
-                            variant="info"
-                            message="Maximum field count reached."
-                        />
-                    )}
+                    {!this.props.readOnly &&
+                        !this.state.addNew &&
+                        this.props.children.length < 3 && (
+                            <Button
+                                renderIcon={IconPlusLine}
+                                margin="small"
+                                color="primary"
+                                onClick={() =>
+                                    this.setState({
+                                        addNew: true
+                                    })
+                                }
+                            >
+                                Add {this.props.config_type} field
+                            </Button>
+                        )}
+                    {!this.props.readOnly &&
+                        this.props.children.length >= 3 && (
+                            <Feedback
+                                variant="info"
+                                message="Maximum field count reached."
+                            />
+                        )}
                 </div>
-                {this.state.addNew && (
+                {!this.props.readOnly && this.state.addNew && (
                     <AddFieldForm
                         onCancel={this.handleCancel}
                         onSubmit={this.handleSubmit}
@@ -112,8 +115,16 @@ class ConfigSection extends React.Component {
                 {this.props.children?.map(c => (
                     <div key={c.id} style={{ marginBottom: 10 }}>
                         <Button
-                            onClick={() => this.props.onDelete(c.id)}
-                            renderIcon={IconTrashLine}
+                            onClick={() =>
+                                !this.props.readOnly &&
+                                this.props.onDelete(c.id)
+                            }
+                            renderIcon={
+                                this.props.readOnly ? undefined : IconTrashLine
+                            }
+                            interaction={
+                                this.props.readOnly ? "readonly" : "enabled"
+                            }
                         >
                             <strong>{c.te_type_name}</strong>: {c.te_field_name}
                         </Button>

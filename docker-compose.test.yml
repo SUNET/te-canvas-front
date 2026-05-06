@@ -1,0 +1,94 @@
+services:
+
+  mongo:
+    image: mongo:8.2
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-rootpw}
+
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_DB=te_canvas
+      - POSTGRES_USER=te_canvas_user
+      - POSTGRES_PASSWORD=RZQZDW47jPaPrn6dkXlgIIK0iN2V5wxF
+
+  node:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    ports:
+      - "8000:8000"
+    depends_on: [ mongo, api ]
+    environment:
+      # NODE_ENV=development activates the /dev-launch LTI bypass in src/lti.js
+      - NODE_ENV=development
+      - NO_LTI=1
+      - LTI_URL=http://localhost:5000
+
+      - MONGO_URL=mongodb://mongo:27017
+      - MONGO_USERNAME=${MONGO_USERNAME:-root}
+      - MONGO_PASSWORD=${MONGO_PASSWORD:-rootpw}
+
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-dev-encryption-key-change-me}
+
+      # Used by the /brand_variables proxy in src/lti.js
+      - CANVAS_URL=https://sunet-sandbox.instructure.com
+
+      # Custom LTI properties faked into res.locals.context.custom in dev
+      - DEV_CANVAS_GROUP=1
+      - DEV_CANVAS_USER=1
+    volumes:
+      - ./platforms.json:/usr/src/app/platforms.json
+
+  sync:
+    image: docker.sunet.se/te-canvas-sync:latest
+    depends_on: [ postgres ]
+    environment:
+      - TE_ID=slu_test
+      - TE_USERGROUP=staff2
+      - TE_RETURN_FIELDS=general.id,general.id_ref
+      - TE_SEARCH_FIELDS=general.title,general.title_ref
+
+      - TE_CERT=4qzqBxK0PTpERy0gd+X6SLxH43GHGjVKA1S5C6XjAHe6NauMtVtikpqwjPpSC74aoME7gX3zsK9aPjknWRIE2wkHdeTqSuTbETMcmnkf9Y+0NeJqcATlg5CMtSBTR3VJj6JpjzeRUT8qvRumCL7cxe2bH8En1OgG3O9P5MgS8X/uHWnCk4LKOLGoUS/ygMIiJKfhxNVna6wzTK3Fj8FOUtQl1BugbTYCdb4lcWQFC3c=
+      - TE_USERNAME=apitest
+      - TE_PASSWORD=y.!NZQrzYPe29jC.LDU3ukZ8
+
+      - CANVAS_URL=https://sunet-sandbox.instructure.com
+      - CANVAS_KEY=27054~BB82BCG94WvnD6uLe8nt9VDBMVC63We97MZr4NUHLHPL2PZa8PafQfvuDuNHEHk8
+      - POSTGRES_HOSTNAME=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=te_canvas
+      - POSTGRES_USER=te_canvas_user
+      - POSTGRES_PASSWORD=RZQZDW47jPaPrn6dkXlgIIK0iN2V5wxF
+
+      - MAX_WORKERS=1
+      
+  api:
+    image: docker.sunet.se/te-canvas-api:latest
+    depends_on: [ postgres, sync]
+    ports:     
+      - "5000:5000"
+    environment:
+      - TE_ID=miun
+      - TE_USERGROUP=personal
+      - TE_RETURN_FIELDS=general.id,general.id_ref
+      - TE_SEARCH_FIELDS=general.title,general.title_ref
+      - TE_ID_FIELDS=Kurskod
+      - TE_TITLE_FIELDS=Namn,BenamnS
+
+      - TE_CERT=4qzqBxK0PTpERy0gd+X6SLxH43GHGjVKOW8HJzO1r0Yk8mmUOrv0KmuF3x8D1Pqmj3oNvbxgsBZiswoUFkxTj13jGw1nxawU0vMI50dxVJTYfZwpaqNWNPIpNMCuOgZB7uDJbw7yp+Ollnpt8Wz/ofLFfIHojxb5h9wkaKXDtHItulirNf8MzTdX0q+FV+XJHfXwVB/51TAFEIKolB5vBYdBZ1PMe+x778Cvmm+0sTfbPoBS7HDRkFqyWcdMUeidq3wCZqrlW759lsv8xF+2+qaouAkME+Vf
+      - TE_USERNAME=soap_user
+      - TE_PASSWORD=Sommar2025!
+      - TE_CANVAS_DEV_BYPASS_ADMIN_AUTH=true
+      
+      - CANVAS_URL=https://sunet-sandbox.instructure.com
+      - CANVAS_KEY=27054~BB82BCG94WvnD6uLe8nt9VDBMVC63We97MZr4NUHLHPL2PZa8PafQfvuDuNHEHk8
+
+      - POSTGRES_HOSTNAME=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=te_canvas
+      - POSTGRES_USER=te_canvas_user
+      - POSTGRES_PASSWORD=RZQZDW47jPaPrn6dkXlgIIK0iN2V5wxF
+
+
